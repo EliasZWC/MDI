@@ -163,6 +163,34 @@ def tfidf(texts):
     return dense
 
 
+def tfidf_bigram(texts):
+    """词法 bigram：word + word-word 联合 token（浅层语义增强）"""
+    docs = []
+    for t in texts:
+        ws = tokenize(t)
+        toks = list(ws) + ["%s_%s" % (ws[i], ws[i + 1]) for i in range(len(ws) - 1)]
+        docs.append(toks)
+    df = collections.Counter()
+    for d in docs:
+        df.update(set(d))
+    N = max(len(docs), 1)
+    vecs = []
+    keys = set()
+    for d in docs:
+        tf = collections.Counter(d)
+        v = {w: c * math.log((N + 1) / (df[w] + 1)) for w, c in tf.items()}
+        norm = math.sqrt(sum(x * x for x in v.values())) or 1.0
+        v = {w: x / norm for w, x in v.items()}
+        vecs.append(v)
+        keys.update(v)
+    ki = {k: i for i, k in enumerate(sorted(keys))}
+    dense = np.zeros((len(vecs), len(ki)))
+    for i, v in enumerate(vecs):
+        for k, val in v.items():
+            dense[i, ki[k]] = val
+    return dense
+
+
 _ENC = {}
 
 
@@ -173,6 +201,29 @@ def semantic_encode(texts, model_name="all-MiniLM-L6-v2"):
     return _ENC[model_name].encode(texts, batch_size=64,
                                    show_progress_bar=False,
                                    convert_to_numpy=True)
+
+
+_LB = {}
+
+
+def legalbert_encode(texts):
+    """法律专用 encoder：nlpaueb/legal-bert-base-uncased，mean pooling"""
+    if not _LB:
+        import torch
+        from transformers import AutoModel, AutoTokenizer
+        _LB["torch"] = torch
+        _LB["tok"] = AutoTokenizer.from_pretrained("nlpaueb/legal-bert-base-uncased")
+        _LB["model"] = AutoModel.from_pretrained("nlpaueb/legal-bert-base-uncased")
+    torch = _LB["torch"]
+    outs = []
+    for i in range(0, len(texts), 32):
+        b = list(texts[i:i + 32])
+        inp = _LB["tok"](b, padding=True, truncation=True, max_length=512,
+                          return_tensors="pt")
+        with torch.no_grad():
+            h = _LB["model"](**inp).last_hidden_state.mean(dim=1)
+        outs.append(h.numpy())
+    return np.concatenate(outs, axis=0)
 
 
 def pair_cosine_dists(vecs, pairs):
@@ -268,8 +319,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", default="data")
     ap.add_argument("--max", type=int, default=600)
-    ap.add_argument("--models", default="tfidf,minilm",
-                    help="comma list: tfidf,minilm,mpnet")
+    ap.add_argument("--models",
+                    default="tfidf,bigram,minilm,mpnet,legalbert",
+                    help="comma list: tfidf,bigram,minilm,mpnet,legalbert")
     args = ap.parse_args()
 
     t0 = time.time()
@@ -282,10 +334,14 @@ def main():
     reps = {}
     if "tfidf" in args.models:
         reps["tfidf"] = tfidf
+    if "bigram" in args.models:
+        reps["bigram"] = tfidf_bigram
     if "minilm" in args.models:
         reps["minilm"] = lambda t: semantic_encode(t, "all-MiniLM-L6-v2")
     if "mpnet" in args.models:
         reps["mpnet"] = lambda t: semantic_encode(t, "all-mpnet-base-v2")
+    if "legalbert" in args.models:
+        reps["legalbert"] = legalbert_encode
 
     print("Type A (isometry: entailment closer than contradiction)")
     log.write("Type A\n")
