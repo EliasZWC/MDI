@@ -3,7 +3,7 @@
 > **数理法理同构** — a general theory of structure-preserving mappings from
 > legal texts to mathematical structures.
 
-**Version:** 0.1.0
+**Version:** 0.1.1
 
 **MDI** posits that there exists a mapping
 $f: \text{legal text} \to \text{mathematical structure}$ that preserves
@@ -30,29 +30,37 @@ formal statements and their operational metrics.
 
 ## Cross-domain validation (no task-specific scorer involved)
 
-The theory is validated on the **natural entailment annotations** of public legal
-NLI datasets, using only generic representations:
+The theory is validated on the **natural annotations** of public legal datasets
+(6 datasets, 2 invariant types), using only generic representations:
 
-| Domain (dataset) | Isomorphism type | Representation | E<C significance |
+**Type A — isometry** (entailment closer than contradiction):
+
+| Domain (dataset) | Isomorphism type | Representation | Significance |
 |---|---|---|---|
-| Contract (ContractNLI) | lexical | TF-IDF | p = 2.45e-05 ✓ |
-| Wills (WillsNLI) | negation | semantic embedding (all-MiniLM) | p = 0.0185 ✓ |
-| Tax (SARA) | computational | — | n.s. |
+| Contract (ContractNLI) | lexical | TF-IDF | p = 3.47e-05 ✓ |
+| Wills (WillsNLI) | negation | semantic embedding | p = 0.0185 ✓ |
+| Tax (SARA) | computational | — | n.s. (boundary) |
 
-**Invariant tested:** entailment pairs are significantly closer in the
-representation space than contradiction pairs.
+**Type B — structure** (same-label closer than different-label):
+
+| Domain (dataset) | Lexical | Semantic embedding |
+|---|---|---|
+| Contract (CUAD, 37 cls) | p = 5.85e-05 ✓ | p = 3.89e-18 ✓ |
+| Contract (MAUD) | p = 4.89e-163 ✓ | p = 1.07e-136 ✓ |
+| Human-rights (ECHR) | n.s. | n.s. (boundary) |
 
 **Finding:** representation granularity determines the observability of the
 isomorphism — lexical spaces carry lexical isomorphism, universal semantic
-embeddings carry negation-type isomorphism, computational isomorphism requires a
-reasoning-capable representation. This motivates *doctrinal-sensitive*
-representations as the general carrier of legal isomorphism.
+embeddings carry negation-type and contract-class isomorphism; computational
+tax isomorphism and judgment-direction labels are documented boundaries. This
+motivates *doctrinal-sensitive* representations as the general carrier of legal
+isomorphism.
 
 Run the validation:
 
 ```bash
 pip install -r requirements.txt
-python code/verify_cross_domain.py --max 600
+python code/verify_cross_domain.py --data-dir <dir> --max 600
 ```
 
 ---
