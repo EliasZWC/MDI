@@ -84,6 +84,27 @@ sizes, percentile = 1.000 (beyond all 100 label permutations — not chance), an
 small bootstrap s.d. (stable). Non-✓ cells sit at AUC ≈ 0.5 inside the null
 band, confirming true non-separation rather than accidental failure.
 
+## P1 well-definedness (v0.1.6): rewrite-stability across domains
+
+Doctrinally-neutral rewrites (pursuant to→under, notwithstanding→despite, …) and
+semantic rewrites (shall→must, terminate→cancel, …) applied to every text;
+rewrite-pair distance vs random-pair distance (`code/verify_welldefined.py`):
+
+| Dataset | rewrite d | random d | AUC | d | null pctile |
+|---|---|---|---|---|---|
+| ContractNLI | 0.004–0.013 | 0.43–0.93 | ≤0.009 | 3.4–9.8 | 1.000 |
+| SARA | 0.007–0.044 | 0.65–0.93 | ≤0.028 | 4.1–7.6 | 1.000 |
+| WillsNLI | 0.003–0.006 | 0.69–0.95 | ≤0.024 | 4.9–8.3 | 1.000 |
+| CUAD | 0.012–0.026 | 0.74–0.97 | ≤0.008 | 5.8–23.9 | 1.000 |
+| MAUD | 0.003–0.010 | 0.46–0.89 | ≤0.006 | 3.0–8.2 | 1.000 |
+| ECHR | 0.000–0.003 | 0.64–0.97 | ≤0.004 | 5.9–45.4 | 1.000 |
+
+**Finding**: P1 holds decisively across all 6 domains and both rewrite types —
+rewrite-pair distance ≈ 0 while random-pair distance ≈ 0.5–0.9 (AUC ≤ 0.03,
+d ≥ 3, percentile = 1.000). Even semantic-level rewrites leave the embedding
+nearly unchanged. This completes the first pillar (well-definedness) of the
+core claim across legal sub-domains.
+
 ## Findings
 
 1. **The isomorphism is observable outside any task-specific scorer**, across 6
