@@ -3,6 +3,8 @@
 > **数理法理同构** — a general theory of structure-preserving mappings from
 > legal texts to mathematical structures.
 
+**Version:** 0.1.0
+
 **MDI** posits that there exists a mapping
 $f: \text{legal text} \to \text{mathematical structure}$ that preserves
 doctrinal structure. The theory is **independent of any downstream task** —
