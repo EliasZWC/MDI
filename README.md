@@ -3,7 +3,7 @@
 > **数理法理同构** — a general theory of structure-preserving mappings from
 > legal texts to mathematical structures.
 
-**Version:** 0.1.2
+**Version:** 0.1.3
 
 **MDI** posits that there exists a mapping
 $f: \text{legal text} \to \text{mathematical structure}$ that preserves
@@ -35,26 +35,30 @@ The theory is validated on the **natural annotations** of public legal datasets
 
 **Type A — isometry** (entailment closer than contradiction):
 
-| Domain (dataset) | tfidf | bigram | minilm | mpnet |
-|---|---|---|---|---|
-| Contract (ContractNLI) | **3.47e-05** ✓ | **3.09e-04** ✓ | n.s. | **7.79e-04** ✓ |
-| Wills (WillsNLI) | n.s. | n.s. | **0.0185** ✓ | n.s. |
-| Tax (SARA) | n.s. | n.s. | n.s. | n.s. (boundary) |
+| Domain (dataset) | tfidf | bigram | minilm | mpnet | legalbert¹ |
+|---|---|---|---|---|---|
+| Contract (ContractNLI) | **3.47e-05** ✓ | **3.09e-04** ✓ | n.s. | **7.79e-04** ✓ | n.s. |
+| Wills (WillsNLI) | n.s. | n.s. | **0.0185** ✓ | n.s. | n.s. |
+| Tax (SARA) | n.s. | n.s. | n.s. | n.s. | n.s. (boundary) |
 
 **Type B — structure** (same-label closer than different-label):
 
-| Domain (dataset) | tfidf | bigram | minilm | mpnet |
-|---|---|---|---|---|
-| Contract (CUAD, 37 cls) | **5.85e-05** ✓ | **2.88e-05** ✓ | **3.89e-18** ✓ | **3.54e-19** ✓ |
-| Contract (MAUD) | **4.89e-163** ✓ | **1.37e-162** ✓ | **1.07e-136** ✓ | **7.80e-133** ✓ |
-| Human-rights (ECHR) | n.s. | n.s. | n.s. | **1.43e-02** ✓ |
+| Domain (dataset) | tfidf | bigram | minilm | mpnet | legalbert¹ |
+|---|---|---|---|---|---|
+| Contract (CUAD, 37 cls) | **5.85e-05** ✓ | **2.88e-05** ✓ | **3.89e-18** ✓ | **3.54e-19** ✓ | **4.56e-13** ✓ |
+| Contract (MAUD) | **4.89e-163** ✓ | **1.37e-162** ✓ | **1.07e-136** ✓ | **7.80e-133** ✓ | **1.76e-73** ✓ |
+| Human-rights (ECHR) | n.s. | n.s. | n.s. | **1.43e-02** ✓ | **1.76e-02** ✓ |
 
-**Finding:** stronger representations capture strictly more isomorphism — mpnet
-(768d) captures everything minilm (384d) does plus ContractNLI (lexical) and
-ECHR judgment labels; contract class structure holds under all representations.
-Computational tax isomorphism (SARA) is a documented boundary. This motivates
-*doctrinal-sensitive* representations as the general carrier of legal
-isomorphism.
+¹ legal-bert run with `--max 300`; others `--max 600`.
+
+**Finding:** there is no free representation — the 5×6 matrix shows each
+representation covers a different subset of isomorphism types (lexical covers
+contract isometry, minilm covers wills isometry, mpnet adds ContractNLI + ECHR,
+legal-bert covers all Type-B structure but no Type-A isometry). **Legal-specific
+representation does not dominate generic ones**; contract class structure holds
+under all five; computational tax isomorphism (SARA) is a documented boundary.
+This motivates *doctrinal-sensitive* representations as the general carrier of
+legal isomorphism.
 
 Run the validation:
 
