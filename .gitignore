@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 validation_log.txt
 rigor_log.txt
+welldefined_log.txt
 
 # QuantBreach is a separate repository (future separate paper) — fully isolated
 qb/
