@@ -1,0 +1,22 @@
+MDI rigor
+Type A (isometry)
+  [ContractNLI] Type A n=400
+    [tfidf ] AUC=0.354 d=0.54 null=0.500±0.047 pctile=1.000 boot=0.356±0.038
+    [minilm] AUC=0.445 d=0.18 null=0.497±0.043 pctile=0.910 boot=0.446±0.046
+  [SARA] Type A n=272
+    [tfidf ] AUC=0.500 d=-0.00 null=0.504±0.036 pctile=0.510 boot=0.498±0.035
+    [minilm] AUC=0.492 d=0.03 null=0.504±0.034 pctile=0.650 boot=0.492±0.035
+  [WillsNLI] Type A n=400
+    [tfidf ] AUC=0.499 d=-0.02 null=0.498±0.045 pctile=0.460 boot=0.500±0.043
+    [minilm] AUC=0.403 d=0.34 null=0.499±0.044 pctile=0.990 boot=0.405±0.043
+Type B (structure)
+  [CUAD] Type B n=364
+    [tfidf ] AUC=0.364 d=1.32 null=0.504±0.029 pctile=1.000 boot=0.361±0.039
+    [minilm] AUC=0.172 d=1.50 null=0.499±0.034 pctile=1.000 boot=0.176±0.029
+  [MAUD] Type B n=189
+    [tfidf ] AUC=0.065 d=2.84 null=0.500±0.013 pctile=1.000 boot=0.065±0.009
+    [minilm] AUC=0.110 d=1.92 null=0.499±0.014 pctile=1.000 boot=0.111±0.010
+  [ECHR] Type B n=100
+    [tfidf ] AUC=0.492 d=0.12 null=0.498±0.014 pctile=0.640 boot=0.492±0.012
+    [minilm] AUC=0.485 d=0.05 null=0.500±0.012 pctile=0.890 boot=0.485±0.013
+total time 49.8s

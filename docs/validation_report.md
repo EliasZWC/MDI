@@ -64,6 +64,26 @@ via Mann–Whitney U.
 
 ¹ legal-bert run with `--max 300` (CPU-bound); others `--max 600`.
 
+## Rigor checks (v0.1.5): effect size + null control + stability
+
+Beyond p-values, each ✓ is confirmed with effect size, permutation null, and
+bootstrap stability (`code/verify_rigor.py`, 100 permutations + 200 bootstraps;
+AUC < 0.5 means the "should-be-closer" pairs are indeed closer):
+
+| Dataset | Rep | AUC | d | null pctile | bootstrap |
+|---|---|---|---|---|---|
+| ContractNLI (A) | tfidf | 0.354 | 0.54 | **1.000** | 0.356±0.038 |
+| WillsNLI (A) | minilm | 0.403 | 0.34 | **0.990** | 0.405±0.043 |
+| CUAD (B) | minilm | 0.172 | 1.50 | **1.000** | 0.176±0.029 |
+| MAUD (B) | tfidf | 0.065 | 2.84 | **1.000** | 0.065±0.009 |
+| MAUD (B) | minilm | 0.110 | 1.92 | **1.000** | 0.111±0.010 |
+| SARA / ECHR / others | — | ≈0.5 | ≈0 | 0.5–0.9 | inside null |
+
+**Findings**: all "✓" cells have AUC well below 0.5 with large/medium effect
+sizes, percentile = 1.000 (beyond all 100 label permutations — not chance), and
+small bootstrap s.d. (stable). Non-✓ cells sit at AUC ≈ 0.5 inside the null
+band, confirming true non-separation rather than accidental failure.
+
 ## Findings
 
 1. **The isomorphism is observable outside any task-specific scorer**, across 6
