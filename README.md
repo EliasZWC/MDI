@@ -1,15 +1,17 @@
 # MDI — Mathematical-Doctrinal Isomorphism
 
-> **数理法理同构** — a general theory of structure-preserving mappings from
-> legal texts to mathematical structures.
+> **数理法理同构** — a unified mathematical relation between the
+> doctrinal-normative space and the legal-application space.
 
-**Version:** 0.1.3
+**Version:** 0.1.4
 
-**MDI** posits that there exists a mapping
-$f: \text{legal text} \to \text{mathematical structure}$ that preserves
-doctrinal structure. The theory is **independent of any downstream task** —
-classification, entailment, judgment prediction, and other legal tasks are all
-*instances* of this isomorphism; none is privileged.
+**MDI** asserts the existence of a mathematical construction $\Phi$ that embeds
+both the **doctrinal-normative space** $\mathcal{N}$ (abstract rules, statutes,
+doctrines) and the **legal-application space** $\mathcal{A}$ (concrete clauses,
+cases, applications) into a **shared** vector space, preserving doctrinal
+relations: a norm $n$ that supports/applies to an application $a$ maps to
+nearby points, $d(g_N(n), g_A(a))$ small. *One* embedding, *one* distance
+structure — not one representation per task type.
 
 ---
 

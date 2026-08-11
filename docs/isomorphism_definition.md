@@ -3,13 +3,44 @@
 Formal statements and operational metrics for **MDI (Mathematical-Doctrinal
 Isomorphism)**.
 
+## Core claim — a unified mathematical relation between two spaces
+
+MDI asserts the existence of a mathematical construction $\Phi$ that relates the
+**doctrinal-normative space** and the **legal-application space**:
+
+- $\mathcal{N}$ — **doctrinal-normative space**: abstract, general legal rules /
+  statutes / doctrines (norm, rule, provision).
+- $\mathcal{A}$ — **legal-application space**: concrete, instantiated clauses /
+  cases / application texts (clause, case, application).
+
+$\Phi$ embeds both spaces into one shared vector space $\mathbb{R}^d$,
+preserving doctrinal relations:
+
+$$
+\Phi = \left(\,g_N: \mathcal{N} \to \mathbb{R}^d,\ \ g_A: \mathcal{A} \to
+\mathbb{R}^d\,\right)
+$$
+
+such that the doctrinal relation $R(n, a)$ between a norm $n \in \mathcal{N}$
+and its application $a \in \mathcal{A}$ is stable with the embedding geometry:
+
+$$
+R(n,a)=\text{support / apply} \;\Rightarrow\;
+d\big(g_N(n),\, g_A(a)\big)\ \text{is small}.
+$$
+
+**"Unified"** means: *one* shared embedding, *one* distance structure, carrying
+both the normative and the application side — not one representation per task
+type. The properties below (P1–P5) are the falsifiable operational forms of this
+relation; each has a concrete metric.
+
 ## Setup
 
-Let:
+Working formulation for the properties: let
 
-- $\mathcal{T}$ be a space of legal texts (clauses, rules, statutory provisions, …).
-- $\mathcal{S}$ be a mathematical structure space (labels, scores, embeddings, …).
-- $f: \mathcal{T} \to \mathcal{S}$ a mapping.
+- $\mathcal{T}$ be a space of legal texts (norms and applications).
+- $\mathcal{S}$ be a mathematical structure space (embeddings, labels, scores, …).
+- $f: \mathcal{T} \to \mathcal{S}$ a mapping (an instance of $g_N$ / $g_A$).
 - $d_\mathcal{S}$ a distance on $\mathcal{S}$.
 
 MDI is the claim that there exist "doctrinal" maps $f$ satisfying the properties
