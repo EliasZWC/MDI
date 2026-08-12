@@ -3,7 +3,7 @@
 > **数理法理同构** — a unified mathematical relation between the
 > doctrinal-normative space and the legal-application space.
 
-**Version:** 0.2.2
+**Version:** 0.2.3
 
 **MDI** asserts the existence of a mathematical construction $\Phi$ that embeds
 both the **doctrinal-normative space** $\mathcal{N}$ (abstract rules, statutes,
@@ -131,6 +131,25 @@ So algebraization proceeds with **linear algebra + affine geometry + lattice /
 order theory** (the E<N<C order is a partial order), not full algebraic
 geometry. Input/output definition and the alignment-type decision procedure
 are formalized in [`docs/isomorphism_definition.md`](docs/isomorphism_definition.md).
+
+### v0.2.3 — algebraic applications (using the new-kind info operationally)
+
+The algebraization facts are turned into **operations**, not distance reading
+(`apply_algebra.py`):
+
+| Application | Operation | Result |
+|---|---|---|
+| **APPL-1 cross-space mapping → retrieval/recommendation** | train linear map norm→application; for a held-out norm predict the application vector and retrieve nearest real applications | top-5 hit **0.044** (13× random), top-10 **0.081** (12×) |
+| **APPL-2 difference-vector algebra → relation classifier** | linear classifier on d = h−p predicts the doctrinal order E/N/C | 3-way acc **0.615** vs majority 0.408 |
+| **APPL-3 entailment translation → completion** | d_E is a stable "entailment translation": subtracting it from an entailment hypothesis brings it near its premise | entail drift 0.391 < non-entail 0.443 |
+
+All three hold: the doctrinal relation is **operable** (mapping generates,
+vector algebra discriminates, translation completes) — the new-kind
+information MDI creates is consumed *computationally*, not just measured.
+
+```bash
+python code/apply_algebra.py --data-dir <dir> --W mdi_W_v2b_mpnet.npy
+```
 
 ```bash
 python code/verify_geometry.py --data-dir <dir> --W mdi_W_v2b_mpnet.npy
