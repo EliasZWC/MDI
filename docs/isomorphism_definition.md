@@ -149,6 +149,64 @@ the theory measures.
 
 ---
 
+## Core positioning: MDI is the mathematization step (the mapping)
+
+(Established 2026-08-13; corrects earlier over-broad framings that pulled
+application methods into MDI.)
+
+**MDI is exactly the mathematization step — the mapping.** It is the theory
+(dual-space Φ, P1–P5) plus the step that projects legal texts / doctrinal
+norms into a **unified computable representation space** (the *Doctrinal
+Space*). Everything that happens *after* the mapping is **MDI Post-Mapping**
+(应用方法层): the mathematical operations on that space — alignment, category,
+metric retrieval, projection, mapping, fitting, channel selection. Those are
+application methods, **not** part of MDI.
+
+```
+MDI (the mapping)          = theory (Φ, P1–P5) + mathematization (texts → space)
+MDI Post-Mapping (after)   = operations on the Doctrinal Space
+                             (alignment / category / metric / projection / fitting)
+```
+
+**Consequences.**
+
+1. **Validating MDI = validating the mapping itself**: space quality
+   (low-dim, isometry-fidelity, computable), P1–P5 holding. NOT how strong the
+   applications are — applications belong to Post-Mapping.
+2. **Applications are open and free**: once the Doctrinal Space exists, any
+   mathematical treatment is legitimate (like fitting data to different
+   distributions). Weak alignment or weak category performance of a *particular
+   φ* reflects its supervision bias, not a failure of MDI — switch channels in
+   Post-Mapping, do not blame the mapping.
+3. **The space is a general object**: the current φ (alignment-supervised) is
+   one instance biased toward alignment; other instances / channels serve other
+   tasks. MDI provides the mathematized space; Post-Mapping decides how to use it.
+
+This fixes the boundary: MDI = the mapping; Post-Mapping = applications on it.
+
+### Space-operation probe (v0.2.5): the space is computable, supervision sets the bias
+
+Verified on **cross-domain real contract clauses** (CUAD / MAUD, which the
+alignment-trained φ did not see in pairing form; `verify_space_ops.py`):
+
+| Operation | CUAD (mpnet vs φ) | MAUD (mpnet vs φ) | Reading |
+|---|---|---|---|
+| OP-1 projection (class-prototype align) | 0.151 vs **0.092** | 0.548 vs **0.519** | φ < mpnet (supervision mismatch) |
+| OP-2 mapping (φ→mpnet reconstruction R²) | 0.351 | 0.506 | φ keeps 35–50% of info (lossy, not empty) |
+| OP-3 vector algebra (centroid separation) | 0.678 vs **0.299** | 0.751 vs **0.347** | φ centroids tighter (alignment-biased) |
+| OP-4 transform fit (one-hot probe MSE) | 0.0333 vs **0.0306** | **0.1104** vs 0.1219 | mixed |
+
+**Reading.** The unified space is **computable** — every operation runs and
+carries information (R² 0.35–0.51) — but the **current φ's alignment
+supervision biases its coordinates toward alignment**: class structure (OP-1/3)
+is weaker than mpnet because category supervision was never given. This
+confirms the core positioning: the space is general; the *instance* is biased
+by its supervision. Making the space strong for category/other operations
+requires **multi-task supervision** (alignment + category) — the natural next
+step.
+
+---
+
 ## Standard input / output of MDI
 
 **Theory level (the formal object).**

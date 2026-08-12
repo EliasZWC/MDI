@@ -1,0 +1,23 @@
+W=mdi_W_v2b_mpnet.npy shape=(768, 64)  k_sub=10
+## Algebraic injection vs plain phi concat (generic classification)
+  [SCOTUS] n=366 classes=12
+    [mpnet        ] acc=0.563
+    [mpnet+phi    ] acc=0.563
+    [mpnet+alg    ] acc=0.568
+    [mpnet+phi+alg] acc=0.560
+  [LEDGAR] n=490 classes=86
+    [mpnet        ] acc=0.594
+    [mpnet+phi    ] acc=0.584
+    [mpnet+alg    ] acc=0.588
+    [mpnet+phi+alg] acc=0.588
+  [CUAD] n=469 classes=37
+    [mpnet        ] acc=0.531
+    [mpnet+phi    ] acc=0.524
+    [mpnet+alg    ] acc=0.527
+    [mpnet+phi+alg] acc=0.520
+  [MAUD] n=205 classes=7
+    [mpnet        ] acc=0.976
+    [mpnet+phi    ] acc=0.976
+    [mpnet+alg    ] acc=0.976
+    [mpnet+phi+alg] acc=0.976
+total time 205.1s
