@@ -18,7 +18,7 @@ Usage in any experiment script:
 # Project semantic version (mirror README **Version:** and git tag).
 # Increment per semantic rules: fix +0.0.1, feature +0.1.0, breaking +1.0.0.
 # ---------------------------------------------------------------------------
-VERSION = "0.3.0"
+VERSION = "0.3.1"
 
 # ---------------------------------------------------------------------------
 # Current canonical weight files (mapping step, MDI-phi).
