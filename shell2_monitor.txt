@@ -1,2 +1,0 @@
-RUNNING
-timeout 1800s, still running
