@@ -1,4 +1,0 @@
-MDI unified representation (contrastive normative-application alignment)
-type-A pairs n=1472 (entail=532, contrad=340)
-base embeddings dim=384
-saved mdi_W.npy shape=(384, 64) total 41.1s

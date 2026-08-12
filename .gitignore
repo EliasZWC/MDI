@@ -3,6 +3,10 @@ __pycache__/
 validation_log.txt
 rigor_log.txt
 welldefined_log.txt
+shell_monitor.txt
+mdi_W.npy
+mdi_train_log.txt
+eval_unified_log.txt
 
 # QuantBreach is a separate repository (future separate paper) — fully isolated
 qb/
