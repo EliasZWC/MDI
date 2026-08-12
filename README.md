@@ -13,11 +13,14 @@ relations: a norm $n$ that supports/applies to an application $a$ maps to
 nearby points, $d(g_N(n), g_A(a))$ small. *One* embedding, *one* distance
 structure — not one representation per task type.
 
-**MDI is the mathematization step — the mapping.** Everything that happens
-*after* the mapping (alignment / classification / retrieval / any operation on
-the resulting Doctrinal Space) is **MDI Post-Mapping** (应用方法层), *not* part
-of MDI. Validating MDI = validating the mapping itself (space quality, P1–P5);
-applications are open and free on top of it.
+**MDI is a paradigm** — 数理法理同构 — with **two standard steps**:
+(1) **Mapping (映射)**: build the Doctrinal Space — φ projects texts/norms into
+a unified computable representation space; (2) **Channel (通道)**: operate on
+that space — fit different mathematical treatments (alignment / category /
+metric / kernel / subspace) and select the one that fits a given task. Both
+steps belong to the paradigm: mapping builds the space, channel uses it.
+Validating MDI = validating the whole flow (mapping quality + channel
+effectiveness).
 
 ---
 

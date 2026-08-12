@@ -149,40 +149,42 @@ the theory measures.
 
 ---
 
-## Core positioning: MDI is the mathematization step (the mapping)
+## Core positioning: MDI is a paradigm — mapping + channel (two standard steps)
 
-(Established 2026-08-13; corrects earlier over-broad framings that pulled
-application methods into MDI.)
+(Established 2026-08-13; supersedes the "MDI vs Post-Mapping" split.)
 
-**MDI is exactly the mathematization step — the mapping.** It is the theory
-(dual-space Φ, P1–P5) plus the step that projects legal texts / doctrinal
-norms into a **unified computable representation space** (the *Doctrinal
-Space*). Everything that happens *after* the mapping is **MDI Post-Mapping**
-(应用方法层): the mathematical operations on that space — alignment, category,
-metric retrieval, projection, mapping, fitting, channel selection. Those are
-application methods, **not** part of MDI.
+**MDI (数理法理同构) is a paradigm** — a complete methodology from theory to
+application, with two standard steps:
 
 ```
-MDI (the mapping)          = theory (Φ, P1–P5) + mathematization (texts → space)
-MDI Post-Mapping (after)   = operations on the Doctrinal Space
-                             (alignment / category / metric / projection / fitting)
+MDI paradigm (Mathematical-Doctrinal Isomorphism)
+  = theory axioms (P1–P5)                       ← foundation
+  + STEP 1 · Mapping (映射)                     ← build the Doctrinal Space
+        φ : texts/norms → unified computable representation space
+  + STEP 2 · Channel (通道)                     ← operate on the space
+        choose the right mathematical treatment (alignment / category /
+        metric / kernel / subspace …) for a given task
 ```
+
+- **Mapping** is the core step: mathematization (the Doctrinal Space).
+- **Channel** is the standard second step: after the space exists, fit different
+  channels and select the one that fits a given task (like fitting data to
+  several distributions and choosing the best-fit family).
+
+Both steps belong to the MDI paradigm. The Channel step is *functionally*
+distinct from Mapping (mapping builds the space; channel uses it), but it is
+**not** outside the paradigm — it is the standard way the paradigm serves a task.
 
 **Consequences.**
 
-1. **Validating MDI = validating the mapping itself**: space quality
-   (low-dim, isometry-fidelity, computable), P1–P5 holding. NOT how strong the
-   applications are — applications belong to Post-Mapping.
-2. **Applications are open and free**: once the Doctrinal Space exists, any
-   mathematical treatment is legitimate (like fitting data to different
-   distributions). Weak alignment or weak category performance of a *particular
-   φ* reflects its supervision bias, not a failure of MDI — switch channels in
-   Post-Mapping, do not blame the mapping.
-3. **The space is a general object**: the current φ (alignment-supervised) is
-   one instance biased toward alignment; other instances / channels serve other
-   tasks. MDI provides the mathematized space; Post-Mapping decides how to use it.
-
-This fixes the boundary: MDI = the mapping; Post-Mapping = applications on it.
+1. Validating MDI = validating the whole flow: Mapping quality (P1–P5, space
+   geometry) **and** Channel effectiveness (fit-and-select works, applications
+   benefit). Both are evidence of the paradigm's power.
+2. The space is a general object; the Channel step is what makes it general in
+   practice — different tasks select different channels (not one-fits-all).
+3. A φ whose coordinates favor alignment is one mapping instance; the Channel
+   step can pick kernel/subspace/category channels to serve other tasks. Weak
+   alignment of *that instance* is not a paradigm failure.
 
 ### Space-operation probe (v0.2.5): the space is computable, supervision sets the bias
 

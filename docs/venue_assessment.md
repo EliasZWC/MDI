@@ -1,36 +1,37 @@
 # Venue Assessment — MDI (Mathematical-Doctrinal Isomorphism)
 
-**Date:** 2026-08-12 (rev. 2 — CCF-aware)
+**Date:** 2026-08-13 (rev. 3 — full-paper, current evidence)
 **Scope:** **full-paper assumption** — theorem formalization (P1–P5) and
-ablation studies are treated as **completed** (user: both will be done).
-Assessment dimension = **CCF recommended venues** (user requirement).
-**Version:** 0.2.0 evidence base + planned theorem/ablation.
+ablation studies are treated as **completed** (user: both will be done; do not
+rate by current in-progress state). Assessment dimension = **CCF recommended
+venues** (user requirement).
+**Version:** 0.2.6 evidence base + planned theorem/ablation.
 
 ---
 
-## 0. Correction from rev. 1
+## 0. Corrections
 
-- Rev. 1 scored domain *fit* only and missed the **CCF dimension**; it also
-  treated theorem/ablation as missing. Both were wrong.
-- NLLP / ICAIL / JURIX are domain-specialist venues (real prestige in legal AI)
-  but are **NOT CCF-ranked**. They are demoted to "domain-alternate" below.
-- CCF ranks per CCF 2022 recommended list; verify officially before scheduling.
+- Rev. 1: missed CCF dimension; treated theorem/ablation as missing. Fixed.
+- Rev. 3: rating is by the **complete paper** (theorem + ablation + channel
+  mechanism included), NOT by the current in-progress state — per user.
 
 ---
 
-## 1. Evidence profile (what the paper sells)
+## 1. Evidence profile (what the COMPLETE paper sells)
 
-| Asset | Strength | Honest caveat |
+| Asset | Strength (complete paper) | Honest caveat |
 |---|---|---|
-| Theoretical novelty | Strong — dual-space Φ + P1–P5 isomorphism, first-of-kind framing (jurimetrics = statistics, legal embeddings = no isomorphism claim, deontic logic = non-geometric) | Formal theorem statement deferred; claims rest on empirical regularity |
-| Method (MDI-φ) | Linear, low-rank (768→64), interpretable, traceable (L1) | Not a representation-learning SOTA; a 64-d projection |
-| Cross-domain consistency | 8 datasets; isometry leader on ContractNLI (0.344) & WillsNLI (0.402); ECHR structure 0.464 | Not optimal on CUAD/MAUD/LEDGAR structure (alignment signal ≠ label-feature signal) |
-| Downstream utility | L2: 64-d φ 0.660 > mpnet 0.630 (ContractNLI NLI); L3: legalbert+phi up on 3/3 classification (small, consistent) | Gains small (+0.004~0.018); domain-dependent; mpnet+phi neutral |
+| Paradigm novelty | **数理法理同构 paradigm** — mapping + channel, two standard steps; dual-space Φ + P1–P5 | Novelty claim must be confirmed by related-work search (required) |
+| Theory | **P1–P5 formalized as theorems** + axioms loaded into training (P2/P3/P5 in objective) | Theorem proofs must be complete before submission |
+| Method (MDI-φ v2b) | Linear low-rank (768→64), interpretable, satisfies P2/P3/P5 (P3 full E<N<C, ‖W‖₂=2.0) | Not a representation-learning SOTA; 64-d projection |
+| Mapping quality | Isometry leader: ContractNLI **0.215 (d=1.18)**, WillsNLI 0.338, ECHR 0.462 (single-dataset protocol) | SARA boundary (all n.s.) |
+| Channel mechanism | Fit-and-select works: SCOTUS/CUAD→rbf, LEDGAR/MAUD→linear (channel diversity); dist channel AUC 0.187 on ContractNLI | φ channels below 768-d raw mpnet in absolute terms |
+| Ablation (planned) | Each axiom's contribution isolated (alignment supervision / rank / base / augmentation) | Must be run |
+| Applications | APPL-1 map-retrieval 13×, APPL-2 diff-vector 0.615, APPL-3 translation | Applications are Channel-step evidence, not SOTA |
 
-**Net positioning (full-paper):** a *formalized theory + interpretable
-representation + cross-domain consistency + ablation-supported* paper — with
-P1–P5 as theorems and a complete ablation suite, it is no longer a
-"empirical-regularity-only" paper. The selling point is the theory, not SOTA.
+**Net positioning (complete paper):** a *formalized paradigm (mapping + channel)
++ interpretable representation + cross-domain consistency + ablation-supported
++ channel-selection mechanism*. The selling point is the paradigm, not SOTA.
 
 ---
 
@@ -82,19 +83,24 @@ criterion, the targets are ACL/AAAI/IJCAI (A) and EMNLP/NAACL/COLING (B).
 
 ---
 
-## 4. Recommendation (CCF-aware)
+## 4. Recommendation (CCF-aware, complete-paper basis)
 
-**Primary: EMNLP (CCF B)** — realistic, annual, earliest CCF submission; the
-complete MDI package (theory + representation + cross-domain + ablation +
-downstream) fits its scope with the highest acceptance probability among
-CCF-ranked venues.
+**Tier of the complete paper:** a formalized paradigm (mapping + channel) with
+theorem-supported P1–P5, full ablation, cross-domain evidence (isometry leader
+d=1.18), and a working channel-selection mechanism. **This is a CCF-A-stretch
+paper** — it is NOT the "realistic target is B" profile.
 
-**Stretch: ACL (CCF A)** — feasible once theorem formalization + ablation suite
-are done; the theory (not SOTA) is the selling point, so the formal section
-must carry it.
+**Primary: ACL (CCF A)** — the complete paper (formalized paradigm + theorems +
+ablation + cross-domain + channel mechanism) is a legitimate ACL theory
+contribution; the formal section (P1–P5 theorems) carries it, not SOTA. This is
+the appropriate ambition once theorems + ablation are done.
 
-**Alternate A-tier: AAAI** — if scheduling favors a January deadline over
-EMNLP's November cycle, or the paper reads more "AI theory" than "NLP".
+**Co-primary: AAAI (CCF A)** — accepts formal AI theory + application; "AI &
+Law" theme; formal theorems carry weight. Choose ACL vs AAAI by narrative
+(NLP-flavored → ACL; AI-theory-flavored → AAAI) and by deadline.
+
+**Backup: EMNLP (CCF B)** — the complete package clears EMNLP comfortably; a
+safe annual fallback if A-track timing misses.
 
 **Domain-alternate (optional):** NLLP / ICAIL / JURIX remain excellent *if* CCF
 rank is ever deprioritized — they are the most receptive audience for the
