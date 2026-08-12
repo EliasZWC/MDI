@@ -375,12 +375,26 @@ keeps the structure (v2b); the operations live in the application layer
 (APPL-1/2/3). "Enhancing MDI via advanced applications" works by strengthening
 the application layer, not by altering φ.
 
+### The operation layer (v2b, reproducible; `apply_algebra.py --W mdi_W_v2b_mpnet.npy`)
+
+| Application | Operation | Result |
+|---|---|---|
+| **APPL-1 cross-space map → retrieval/recommendation** | linear norm→application map; predict the application vector of a held-out norm, retrieve nearest real applications | top-5 hit **0.044** (13× random), top-10 **0.081** (12×) |
+| **APPL-2 difference-vector algebra → relation classifier** | linear classifier on d = h−p predicts E/N/C | 3-way acc **0.615** vs majority 0.408; E-vs-C 0.643 |
+| **APPL-3 entailment translation → completion** | d_E is a stable "entailment translation": subtracting it from an entailment hypothesis brings it near its premise | entail drift 0.391 < non-entail 0.443 |
+
+All three hold reproducibly on v2b: the doctrinal relation is **operable**
+(mapping generates, vector algebra discriminates, translation completes) — the
+new-kind information MDI creates is consumed *computationally*, on top of the
+structure-preserving v2b space.
+
 ## Reproduction (v0.2.4)
 
 ```bash
 python code/eval_unified.py --W mdi_W_v2b_mpnet.npy --mdi-base all-mpnet-base-v2 --only ContractNLI
 python code/eval_unified.py --W mdi_W_v2b_mpnet.npy --mdi-base all-mpnet-base-v2 --only WillsNLI
 # ... --only ECHR / CUAD / MAUD / SCOTUS / LEDGAR
+python code/apply_algebra.py --data-dir <dir> --W mdi_W_v2b_mpnet.npy
 ```
 
 ## Reproduction (v0.2.1)
