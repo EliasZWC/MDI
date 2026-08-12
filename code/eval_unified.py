@@ -149,6 +149,9 @@ def main():
     ap.add_argument("--models", default="tfidf,bigram,minilm,mpnet,legalbert")
     ap.add_argument("--mdi-base", default="all-MiniLM-L6-v2",
                     help="base features for MDI-phi (all-MiniLM-L6-v2 | all-mpnet-base-v2)")
+    ap.add_argument("--only", default=None,
+                    help="run a single dataset (ContractNLI/SARA/WillsNLI/CUAD/"
+                         "MAUD/ECHR/SCOTUS/LEDGAR) instead of all")
     args = ap.parse_args()
 
     t0 = time.time()
@@ -157,12 +160,18 @@ def main():
     print("=" * 72)
     print("MDI unified phi evaluation (8 datasets, vs minilm baseline)")
     print(f"W={'loaded '+str(W.shape) if W is not None else 'NONE (identity)'}")
+    print(f"only={args.only}")
     print("=" * 72)
     log.write("MDI unified phi eval\n")
+
+    def want(name):
+        return args.only is None or args.only == name
 
     emit(log, "Type A (isometry)")
     for name, fn in [("ContractNLI", load_contractnli), ("SARA", load_sara),
                      ("WillsNLI", load_willsnli)]:
+        if not want(name):
+            continue
         try:
             rows = fn(args.data_dir, args.max)
         except FileNotFoundError as e:
@@ -174,6 +183,8 @@ def main():
     for name, fn in [("CUAD", load_cuad), ("MAUD", load_maud),
                      ("ECHR", load_echr), ("SCOTUS", load_scotus),
                      ("LEDGAR", load_ledgar)]:
+        if not want(name):
+            continue
         try:
             rows = fn(args.data_dir, args.max)
         except FileNotFoundError as e:

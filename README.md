@@ -3,7 +3,7 @@
 > **数理法理同构** — a unified mathematical relation between the
 > doctrinal-normative space and the legal-application space.
 
-**Version:** 0.2.3
+**Version:** 0.2.4
 
 **MDI** asserts the existence of a mathematical construction $\Phi$ that embeds
 both the **doctrinal-normative space** $\mathcal{N}$ (abstract rules, statutes,
@@ -114,6 +114,14 @@ satisfying P5 (half the Lipschitz constant) and leaving Type-B structure
 unchanged. The axioms help, they do not hurt. See
 [`docs/validation_report.md`](docs/validation_report.md) §v0.2.1.
 
+> **v0.2.4 correction.** Re-evaluating MDI-φ v2b with `--only` (single-dataset
+> protocol, `eval_unified.py --only`) exposed that the earlier full-run numbers
+> (0.300 / 0.386) used a stale weight (v2 vs v2b). The accurate v2b numbers are
+> **stronger**: ContractNLI **0.215** (d=1.18, leader by −0.139 over tfidf),
+> WillsNLI **0.338** (d=0.63, leader by −0.065 over minilm), ECHR **0.462**
+> (still leader). The single-dataset protocol is now the standard for baseline
+> comparisons (faster, and removes version-mixups).
+
 ### v0.2.2 — geometricity & algebraization
 
 **Geometricity** (`verify_geometry.py`): MDI-φ concentrates the doctrinal
@@ -149,6 +157,26 @@ information MDI creates is consumed *computationally*, not just measured.
 
 ```bash
 python code/apply_algebra.py --data-dir <dir> --W mdi_W_v2b_mpnet.npy
+```
+
+### v0.2.4 — layered architecture (structure in φ, operations on top)
+
+Attempts to load the *translation consistency* (APPL-3's algebraic fact) into
+the training objective failed in both forms — `mdi_phi_v3.py` (projection
+share) and `mdi_phi_v31.py` (cosine alignment) — breaking P3 (dN<dE) and
+degrading isometry (AUC 0.285→0.395/0.424), even though APPL-1 retrieval
+improved (top-1 0.006→0.019). This is a genuine trade-off, not a bug: direction
+alignment and amplitude ordering (P3) conflict in one objective.
+
+**Conclusion — MDI is consumed in layers:** φ keeps the structure (v2b:
+AUC 0.285, full E<N<C), and the operations live in the application layer
+(APPL-1/2/3). "Enhancing MDI via advanced applications" works by strengthening
+the application layer, not by altering φ. Also corrected the v2b baseline
+numbers via the single-dataset protocol (`--only`): ContractNLI 0.215 (d=1.18),
+WillsNLI 0.338 (d=0.63), ECHR 0.462.
+
+```bash
+python code/eval_unified.py --W mdi_W_v2b_mpnet.npy --mdi-base all-mpnet-base-v2 --only ContractNLI
 ```
 
 ```bash
