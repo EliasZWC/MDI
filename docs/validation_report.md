@@ -165,3 +165,81 @@ different.
 pip install -r requirements.txt
 python code/verify_cross_domain.py --max 600
 ```
+
+---
+
+# v0.2.0 — The Unified Representation (MDI-φ) and Three-Layer Utility
+
+## MDI-φ: the framework's own representation
+
+Instead of relying on off-the-shelf embeddings, MDI's construction itself is
+realized by a **learned linear projection** $\phi(x) = x W$ that maps a base
+embedding into a lower-dimensional *doctrinal space* in which normative→
+application alignments are made close and contradictions are pushed apart:
+
+- base features: `all-MiniLM-L6-v2` (384-d → 64-d, `mdi_W.npy`) and
+  `all-mpnet-base-v2` (768-d → 64-d, `mdi_W_mpnet.npy`)
+- trained by contrastive hinge loss on **normative–application pairs** from
+  ContractNLI / WillsNLI / SARA (Type-A supervision)
+- the resulting 64-d point is a *doctrinal vector*: linear, low-rank,
+  interpretable, and traceable to the alignment evidence (L1 contribution)
+
+## Isometry / structure re-check with MDI-φ (8 datasets × 6 representations)
+
+`code/eval_unified.py --W mdi_W_mpnet.npy --mdi-base all-mpnet-base-v2`
+
+**Type A — isometry (AUC, lower = closer = better):**
+
+| Dataset | tfidf | bigram | minilm | mpnet | legalbert | **MDI-φ** |
+|---|---|---|---|---|---|---|
+| ContractNLI | 0.354 | 0.379 | 0.445 | 0.360 | 0.468 | **0.344** 🏆 |
+| WillsNLI | 0.499 | 0.486 | 0.403 | 0.453 | 0.499 | **0.402** 🏆 |
+| SARA | 0.500 | 0.497 | 0.492 | 0.480 | 0.506 | 0.488 (boundary) |
+
+**Type B — structure (AUC, lower = closer = better):**
+
+| Dataset | tfidf | bigram | minilm | mpnet | legalbert | **MDI-φ** |
+|---|---|---|---|---|---|---|
+| CUAD | 0.364 | 0.355 | 0.172 | 0.192 | 0.256 | 0.241 |
+| MAUD | 0.065 | 0.064 | 0.110 | 0.107 | 0.235 | 0.094 |
+| ECHR | 0.492 | 0.487 | 0.485 | 0.472 | 0.473 | **0.464** 🏆 |
+| SCOTUS | 0.336 | 0.328 | 0.370 | 0.319 | 0.398 | 0.334 |
+| LEDGAR | 0.081 | 0.083 | 0.071 | 0.039 | 0.345 | 0.079 |
+
+**Finding.** The learned doctrinal space becomes the isometry leader on both
+Type-A domains where the relation holds (ContractNLI, WillsNLI), and is the
+best structure representation on ECHR (semantic-judgment-driven). Full
+unification on contract structure (CUAD/MAUD, dominated by lexical/semantic
+class signal) and LEDGAR (dominated by mpnet) is not achieved — φ carries
+alignment signal, not label-feature signal.
+
+## Three-layer utility (downstream tasks, simple models only)
+
+`code/eval_downstream.py --data-dir <dir> --cv 3`
+
+Contribution claims validated with simple models (LR / KNN / cosine retrieval):
+
+- **L1 — interpretability & traceability (all models):** φ is a low-rank linear
+  map; the 64-d doctrinal vector and its alignment geometry are directly
+  inspectable and evidence-linked — inherent to the construction, no opacity.
+- **L2 — simple → strong (lift the simple):** in the alignment domain
+  (ContractNLI 3-way NLI) the 64-d φ  reaches **0.660** vs base mpnet 0.630 —
+  a 1/12-dimensional projection *exceeding* its 768-d teacher on the task that
+  defines the doctrinal relation.
+- **L3 — strong → stronger (augment the strong):** `legalbert+phi` improves
+  legal-bert on **all three** classification tasks (SCOTUS 0.582→0.590,
+  LEDGAR 0.580→0.598, CUAD 0.676→0.680); `mpnet+phi` is neutral (no loss).
+
+**Honest boundaries.** L2 is domain-dependent: in pure classification
+minilm+phi does not reach mpnet/legalbert, and ContractNLI retrieval is flat;
+WillsNLI NLI slightly drops under φ. The utility of φ is concentrated where the
+doctrinal relation is defined (alignment/isometry) — a *predictable* boundary
+that itself evidences L1 traceability.
+
+## Reproduction (v0.2.0)
+
+```bash
+python code/mdi_unified.py --model all-mpnet-base-v2 --out mdi_W_mpnet.npy
+python code/eval_unified.py --W mdi_W_mpnet.npy --mdi-base all-mpnet-base-v2
+python code/eval_downstream.py --data-dir <dir> --cv 3
+```

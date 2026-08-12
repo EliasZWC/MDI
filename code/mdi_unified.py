@@ -89,6 +89,7 @@ def main():
     ap.add_argument("--epochs", type=int, default=20)
     ap.add_argument("--k", type=int, default=64)
     ap.add_argument("--model", default=MODEL)
+    ap.add_argument("--out", default="mdi_W.npy", help="output weight file")
     args = ap.parse_args()
 
     t0 = time.time()
@@ -109,8 +110,8 @@ def main():
     d = vecs.shape[1]
     emit(f"base embeddings dim={d}")
     W = train(pairs, vecs, d, args.k, args.epochs)
-    np.save("mdi_W.npy", W)
-    emit(f"saved mdi_W.npy shape={W.shape} total {time.time()-t0:.1f}s")
+    np.save(args.out, W)
+    emit(f"saved {args.out} shape={W.shape} total time {time.time()-t0:.1f}s")
     log.close()
 
 

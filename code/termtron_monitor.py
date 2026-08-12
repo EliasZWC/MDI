@@ -60,14 +60,19 @@ def main():
                     with open(args.log, encoding="utf-8") as f:
                         txt = f.read()
                     tail = txt[-3000:]
-                    if "total time" in txt:
-                        write("DONE", tail)
-                        print("DONE")
-                        return
-                # no completion marker -> FAILED (crashed); capture error tail
-                # try to read terminal output via status lines
-                write("FAILED", tail or "(no log)")
-                print("FAILED (no 'total time' marker in log)")
+                else:
+                    txt = ""
+                bad = ("Traceback" in txt) or ("Error:" in txt) or ("ERROR" in txt)
+                done = ("total time" in txt) or ("saved " in txt) or ("DONE" in txt)
+                if bad:
+                    write("FAILED", tail)
+                    print("FAILED (error in log)")
+                elif done:
+                    write("DONE", tail)
+                    print("DONE")
+                else:
+                    write("FAILED", tail or "(no completion marker)")
+                    print("FAILED (no completion marker in log)")
                 return
             time.sleep(args.poll)
         write("RUNNING", f"timeout {args.timeout}s, still running")

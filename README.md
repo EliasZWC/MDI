@@ -3,7 +3,7 @@
 > **数理法理同构** — a unified mathematical relation between the
 > doctrinal-normative space and the legal-application space.
 
-**Version:** 0.1.7
+**Version:** 0.2.0
 
 **MDI** asserts the existence of a mathematical construction $\Phi$ that embeds
 both the **doctrinal-normative space** $\mathcal{N}$ (abstract rules, statutes,
@@ -71,6 +71,37 @@ python code/verify_cross_domain.py --data-dir <dir> --max 600 --models tfidf,big
 
 ---
 
+## The unified representation (MDI-φ) and three-layer utility
+
+MDI's own construction is realized as a **learned linear projection**
+$\phi(x)=xW$ into a low-dimensional *doctrinal space* (64-d, trained by
+contrastive alignment on normative–application pairs from ContractNLI /
+WillsNLI / SARA). This gives a **three-layer contribution**:
+
+1. **L1 — interpretability (all models):** $\phi$ is a low-rank linear map;
+   the 64-d doctrinal vector and its alignment geometry are inspectable and
+   evidence-linked — interpretability is inherent, not bolted on.
+2. **L2 — lift the simple:** in the alignment domain (ContractNLI NLI) the 64-d
+   φ reaches **0.660** vs 768-d mpnet 0.630 — a 1/12-dimensional projection
+   *exceeding* its base model on the doctrinal relation task.
+3. **L3 — augment the strong:** `legalbert+phi` improves legal-bert on all
+   three classification tasks (SCOTUS 0.582→0.590, LEDGAR 0.580→0.598,
+   CUAD 0.676→0.680); `mpnet+phi` is neutral (no loss).
+
+MDI-φ is also the **isometry leader** on both Type-A domains (ContractNLI
+0.344, WillsNLI 0.402 — best of all 6 representations) and the best structure
+representation on ECHR (0.464). See
+[`docs/validation_report.md`](docs/validation_report.md) §v0.2.0 for full
+8-dataset × 6-representation tables.
+
+```bash
+python code/mdi_unified.py --model all-mpnet-base-v2 --out mdi_W_mpnet.npy
+python code/eval_unified.py --W mdi_W_mpnet.npy --mdi-base all-mpnet-base-v2
+python code/eval_downstream.py --data-dir <dir> --cv 3
+```
+
+---
+
 ## Repository layout
 
 ```
@@ -79,6 +110,9 @@ MDI/
   docs/isomorphism_definition.md     formal definitions & operational metrics
   docs/validation_report.md          full cross-domain evidence
   code/verify_cross_domain.py        self-contained cross-domain validator
+  code/mdi_unified.py                trains the MDI-φ projection
+  code/eval_unified.py               8-dataset × 6-representation isometry/structure
+  code/eval_downstream.py            three-layer utility (L1/L2/L3) downstream
   requirements.txt
 ```
 

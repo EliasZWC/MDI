@@ -74,7 +74,7 @@ def build_b(rows):
     return texts, same, diff
 
 
-def reps_of(feats_minilm, texts, W, models):
+def reps_of(feats_minilm, mdi_feats, texts, W, models):
     """Build representation dict for a dataset per --models."""
     reps = {}
     if "tfidf" in models:
@@ -88,16 +88,17 @@ def reps_of(feats_minilm, texts, W, models):
     if "legalbert" in models:
         reps["legalbert"] = legalbert_encode(texts)
     if W is not None:
-        reps["MDI-phi"] = feats_minilm @ W
+        reps["MDI-phi"] = mdi_feats @ W
     return reps
 
 
-def run_a(name, rows, log, W, models, perm=100):
+def run_a(name, rows, log, W, models, perm=100, mdi_base="all-MiniLM-L6-v2"):
     pairs, allt = build_a(rows)
     n = len(pairs)
     emit(log, f"  [{name}] Type A n={n}")
     feats = st_encode(allt, "all-MiniLM-L6-v2")
-    reps = reps_of(feats, allt, W, models)
+    mdi_feats = feats if mdi_base == "all-MiniLM-L6-v2" else st_encode(allt, mdi_base)
+    reps = reps_of(feats, mdi_feats, allt, W, models)
     for rname, F in reps.items():
         d = {}
         for i, (p, h, l) in enumerate(pairs):
@@ -116,11 +117,12 @@ def run_a(name, rows, log, W, models, perm=100):
                   f"null={nm:.3f}±{ns:.3f} pctile={pct:.3f}")
 
 
-def run_b(name, rows, log, W, models, perm=100):
+def run_b(name, rows, log, W, models, perm=100, mdi_base="all-MiniLM-L6-v2"):
     texts, same, diff = build_b(rows)
     emit(log, f"  [{name}] Type B n={len(texts)}")
     feats = st_encode(texts, "all-MiniLM-L6-v2")
-    reps = reps_of(feats, texts, W, models)
+    mdi_feats = feats if mdi_base == "all-MiniLM-L6-v2" else st_encode(texts, mdi_base)
+    reps = reps_of(feats, mdi_feats, texts, W, models)
     for rname, F in reps.items():
         ds = pair_cosine_dists(F, same)
         dd = pair_cosine_dists(F, diff)
@@ -145,6 +147,8 @@ def main():
     ap.add_argument("--max", type=int, default=400)
     ap.add_argument("--perm", type=int, default=100)
     ap.add_argument("--models", default="tfidf,bigram,minilm,mpnet,legalbert")
+    ap.add_argument("--mdi-base", default="all-MiniLM-L6-v2",
+                    help="base features for MDI-phi (all-MiniLM-L6-v2 | all-mpnet-base-v2)")
     args = ap.parse_args()
 
     t0 = time.time()
@@ -164,7 +168,7 @@ def main():
         except FileNotFoundError as e:
             emit(log, f"  [{name}] missing: {e}")
             continue
-        run_a(name, rows, log, W, args.models.split(","), args.perm)
+        run_a(name, rows, log, W, args.models.split(","), args.perm, args.mdi_base)
 
     emit(log, "Type B (structure)")
     for name, fn in [("CUAD", load_cuad), ("MAUD", load_maud),
@@ -175,7 +179,7 @@ def main():
         except FileNotFoundError as e:
             emit(log, f"  [{name}] missing: {e}")
             continue
-        run_b(name, rows, log, W, args.models.split(","), args.perm)
+        run_b(name, rows, log, W, args.models.split(","), args.perm, args.mdi_base)
 
     emit(log, f"total time {time.time() - t0:.1f}s")
     log.close()
