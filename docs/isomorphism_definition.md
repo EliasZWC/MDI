@@ -113,3 +113,36 @@ reported separately as content-sensitivity.
   texts to a structure, independent of the downstream task.
 - Observability of P2 depends on the representation granularity of $\mathcal{S}$;
   see `validation_report.md`.
+
+---
+
+## Positioning: theory as ruler, instantiation as competitor
+
+(Established 2026-08-12; prevents a recurring category-error in reading the
+evaluations.)
+
+MDI has **two distinct components** that must not be conflated:
+
+1. **MDI the theory** — the existence claim (dual-space $\Phi$, P1–P5). This is
+   a *ruler*: it defines measurable properties of any representation space
+   (isometry fidelity, structure, spectral compression). A theory is not a
+   competitor; it is the measuring instrument. Like Vista's effective-rank /
+   spectral-entropy analysis tools, the theory's value is *diagnostic*, not
+   "winning" against models.
+2. **MDI-φ the instantiation** — a concrete representation
+   $\phi(x) = xW$ (base encoder + learned projection). This *is* a competitor:
+   a text→vector representation function, same layer as tfidf / minilm / mpnet
+   / legalbert.
+
+**Consequence for evaluation.**
+
+- Representation-level comparisons (MDI-φ vs common representations on
+  isometry/structure AUC) are **valid and standard** — all are representation
+  methods at the same layer.
+- Downstream evaluation (representation as features + a *fixed* simple
+  classifier, e.g. LR) is the standard representation-as-features paradigm.
+- The theory's P1–P5 properties are never "compared"; they are the **tool** that
+  measures whether a space (any space) carries the doctrinal structure.
+
+This two-part reading is fixed documentation: the representation competes,
+the theory measures.

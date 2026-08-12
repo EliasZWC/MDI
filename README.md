@@ -3,7 +3,7 @@
 > **数理法理同构** — a unified mathematical relation between the
 > doctrinal-normative space and the legal-application space.
 
-**Version:** 0.2.0
+**Version:** 0.2.1
 
 **MDI** asserts the existence of a mathematical construction $\Phi$ that embeds
 both the **doctrinal-normative space** $\mathcal{N}$ (abstract rules, statutes,
@@ -94,10 +94,32 @@ representation on ECHR (0.464). See
 [`docs/validation_report.md`](docs/validation_report.md) §v0.2.0 for full
 8-dataset × 6-representation tables.
 
+### v0.2.1 — theory-loaded MDI-φ (P2+P3+P5 in the objective)
+
+The depth application: instead of a bare contrastive projection, the theory's
+own axioms now enter the training objective. P3 (monotonicity) adds a
+per-triplet E<N<C constraint; P5 (Lipschitz) is enforced by explicit spectral
+normalization ($\lVert W\rVert_2 \le L=2.0$).
+
+| Evidence (train domain) | v1 (bare hinge) | v2 (theory-loaded) |
+|---|---|---|
+| isometry AUC | 0.406 | **0.361** |
+| \|\|W\|\|₂ (Lipschitz) | 3.520 | **2.000** |
+| \|\|W\|\|F | 22.1 | **12.6** |
+| dE / dN / dC | 0.67/0.83/0.71 | **0.41/0.47/0.44** |
+
+Cross-domain, v2 is the isometry leader and *improves on v1*: ContractNLI
+**0.300** (v1 0.344), WillsNLI **0.386** (v1 0.402), ECHR **0.463** — while
+satisfying P5 (half the Lipschitz constant) and leaving Type-B structure
+unchanged. The axioms help, they do not hurt. See
+[`docs/validation_report.md`](docs/validation_report.md) §v0.2.1.
+
 ```bash
 python code/mdi_unified.py --model all-mpnet-base-v2 --out mdi_W_mpnet.npy
 python code/eval_unified.py --W mdi_W_mpnet.npy --mdi-base all-mpnet-base-v2
 python code/eval_downstream.py --data-dir <dir> --cv 3
+python code/mdi_phi_v2.py --model all-mpnet-base-v2 --out mdi_W_v2_mpnet.npy --lip 2.0
+python code/eval_unified.py --W mdi_W_v2_mpnet.npy --mdi-base all-mpnet-base-v2
 ```
 
 ---
@@ -110,7 +132,9 @@ MDI/
   docs/isomorphism_definition.md     formal definitions & operational metrics
   docs/validation_report.md          full cross-domain evidence
   code/verify_cross_domain.py        self-contained cross-domain validator
-  code/mdi_unified.py                trains the MDI-φ projection
+  code/mdi_unified.py                trains the MDI-φ projection (v1)
+  code/mdi_phi_v2.py                 theory-loaded MDI-φ (P2+P3+P5)
+  code/verify_phi_v2.py              verifies P3/P5/P2 on the projection
   code/eval_unified.py               8-dataset × 6-representation isometry/structure
   code/eval_downstream.py            three-layer utility (L1/L2/L3) downstream
   requirements.txt

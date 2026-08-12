@@ -6,7 +6,10 @@ welldefined_log.txt
 shell_monitor.txt
 mdi_W.npy
 mdi_W_mpnet.npy
+mdi_W_v2_mpnet.npy
+mdi_W_v2_smoke.npy
 mdi_train_log.txt
+phi_v2_verify.txt
 eval_unified_log.txt
 downstream_log.txt
 
