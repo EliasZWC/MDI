@@ -146,3 +146,158 @@ MDI has **two distinct components** that must not be conflated:
 
 This two-part reading is fixed documentation: the representation competes,
 the theory measures.
+
+---
+
+## Standard input / output of MDI
+
+**Theory level (the formal object).**
+
+| | Definition |
+|---|---|
+| **Input** | Dual spaces + their relation: the doctrinal-normative space $\mathcal{N}$ (rules / statutes / doctrines) and the legal-application space $\mathcal{A}$ (clauses / cases / statements), together with a **doctrinal alignment relation** $\mathcal{R} \subseteq \mathcal{N}\times\mathcal{A}$ (e.g. $n$ supports/applies to $a$ ⇒ entailment; $n$ contradicts $a$). |
+| **Output** | An embedding $\Phi=(g_{\mathcal{N}}, g_{\mathcal{A}})$ into a **shared** vector space such that $\mathcal{R}$ is geometrically preserved: $(n,a)\in\mathcal{R}^+\Rightarrow d(g_{\mathcal{N}}(n),g_{\mathcal{A}}(a))$ small, $(n,a)\in\mathcal{R}^-\Rightarrow$ large, satisfying P1–P5. |
+
+**Instantiation level (MDI-φ, operational).**
+
+| | Definition |
+|---|---|
+| **Input** | Text pairs $(p,h)$ + relation label $y\in\{E,N,C\}$ (entailment / neutral / contradiction); $p$ drawn from $\mathcal{N}$, $h$ from $\mathcal{A}$. |
+| **Output** | A linear projection $W$ (768→64) mapping every text to a 64-d *doctrinal vector*, so that the distance order $E<N<C$ holds. |
+
+**Key point.** MDI's output is *not* a class or a score — it is **a space together with a preserved relation**. Downstream usage (classifier / retrieval / similarity) lives on top of the representation and is not part of MDI's output.
+
+## Definition of "alignment-type" (alignment-oriented) tasks
+
+An **operational, non-circular** definition based on the structure of the
+ground truth:
+
+> **Task $T$ is alignment-type ⟺ its ground truth can be formalized as a
+> *relation between two texts* (entailment / support / applies / contradiction /
+> equivalence), NOT as a *class membership of a single text*.**
+
+**Decision procedure (three questions):**
+1. **Input** — is the input a *pair of texts* or a *single text*? Pair ⇒ candidate; single ⇒ non-alignment.
+2. **Label** — does the label express a *relation* (E/N/C ordering) or a *category* (class id)? Relation ⇒ alignment; category ⇒ non-alignment.
+3. **Preservability** — can the relation be geometrically preserved (isometry: entailment close, contradiction far)? Embeddable ⇒ alignment; pure cluster structure ⇒ non-alignment.
+
+**Classification of the benchmark tasks:**
+
+| Task | Structure | Type |
+|---|---|---|
+| NLI / isometry (ContractNLI, WillsNLI) | text pair + E/N/C order | ✅ alignment-type (MDI's direct target) |
+| Retrieval (premise → hypothesis top-k) | text pair + relative rank | ⚠️ partial (implicit similarity, not strict entailment order) |
+| Classification (CUAD/MAUD/SCOTUS/LEDGAR) | single text + class label | ❌ non-alignment |
+| Generation / summarization / QA extraction | sequence output | ❌ non-alignment |
+
+**Why this matters.** It turns MDI's applicability boundary from "feeling" into
+a *decision* — answer the three questions and you know whether MDI-φ can bring
+gain. It also explains the *alignment bias*: φ's supervision (the E<N<C order)
+is exactly the ground-truth form of alignment-type tasks, so its gain is
+concentrated there; non-alignment tasks have a different ground-truth form, so
+MDI-φ carries no advantage (it is still usable, but not better).
+
+---
+
+## Geometricity of MDI-φ and the algebraization route
+
+The "similarity" use of MDI-φ (distance / feature augmentation) is the most
+elementary way to consume the *new-kind information* MDI creates (the doctrinal
+alignment structure — qualitatively new vs. the semantic-similarity information
+of off-the-shelf embeddings). Algebraizing MDI — using the space *operationally*
+(vector-space algebra, cross-space mapping, structure preservation) instead of
+reading distances — is treated as **the problem to be solved next**, not a
+deferred future-work paragraph.
+
+**Prerequisite: establishing geometricity** (why algebraic-geometry methods may
+apply). Empirically checked on the training domain (n=1472; `verify_geometry.py`
+):
+
+**A. Spectral compression (Vista-style):**
+
+| Space | effective rank | spectral entropy | PCA-95% | isometry AUC |
+|---|---|---|---|---|
+| mpnet (768) | 313.0 | 5.75 | 157 | 0.391 |
+| **MDI-φ (64)** | **49.3** | **3.90** | **45** | **0.285** |
+
+→ φ concentrates the doctrinal structure into a **low-dimensional subspace**
+(45 dims carry what mpnet needs 157 for; effective rank 49 vs 313). Low-rank,
+low-dimensional structure is exactly the condition under which a space is
+approximable by algebraic varieties / polynomials.
+
+**B. Structural form (E vs C separability, 3-fold SVM):**
+
+| Representation | linear | poly-2 | poly-3 | RBF |
+|---|---|---|---|---|
+| mpnet (diff) | 0.609 | 0.636 | 0.612 | 0.647 |
+| **φ (diff)** | **0.638** | 0.649 | 0.617 | 0.635 |
+| **φ (concat)** | 0.634 | **0.650** | 0.625 | **0.663** |
+
+→ the doctrinal relation in φ is **cleaner and more linearly separable than in
+mpnet** (0.638 vs 0.609 on the difference representation), with only marginal
+polynomial gain (poly-2 +0.011; poly-3 *drops*).
+
+**Geometricity conclusion.** MDI-φ is geometric: low-dimensional, isometry-
+preserving, and the E/C relation is dominantly **affine / linear** in structure
+rather than a complex non-linear algebraic variety. **Algebraic-geometry methods
+are admissible** (the space is low-rank and variety-approximable), but the
+empirical form points to **linear / affine algebra and lattice-theoretic
+structure first** (subspaces, linear maps, order structures), before higher-
+degree polynomial varieties — because the data shows the relation is mostly
+linear, and only a small non-linear residue remains.
+
+### Algebraization test (does the relation have algebraic structure?)
+
+Empirically tested (`verify_algebra.py`, training domain n=1472, phi-space):
+
+**A. Polynomial map norm→application (Ridge RMSE, 70/30):**
+
+| | deg-1 | deg-2 | deg-3 |
+|---|---|---|---|
+| entailment | **0.0317** | 0.0351 | 0.0311 |
+| contradiction | **0.0335** | 0.0341 | — (few samples) |
+
+→ **no polynomial gain**: deg-2 worse, deg-3 ≈ linear. The norm→application
+map is **linear**; non-linear polynomial terms carry no extra information.
+
+**B. Relation-vector subspace (PCA of d = h−p):**
+
+| difference vector | top-5 | top-10 | top-20 |
+|---|---|---|---|
+| entailment-d | 0.389 | 0.562 | 0.757 |
+| contradiction-d | 0.446 | 0.623 | 0.799 |
+| **direction alignment** | \|cos(v_E, v_C)\| = **0.876** | | |
+
+→ the entailment and contradiction difference vectors point in **almost the
+same direction** — the doctrinal relation is **translation-like** (same
+direction, different magnitude), a strong signature of **linear / affine**
+structure rather than distinct geometric regions.
+
+**C. Polynomial separability (E vs C, logistic 5-fold):**
+
+| poly-1 | poly-2 | poly-3 |
+|---|---|---|
+| **0.643** | 0.606 | 0.612 |
+
+→ **linear is best**; polynomial features hurt. The classes are separated by a
+**linear hyperplane**, not an algebraic hypersurface.
+
+**Algebraization conclusion (empirical correction of the algebraic-geometry
+hypothesis).** The doctrinal relation in MDI-φ is **linear / affine algebraic
+structure, not a polynomial algebraic variety**:
+
+- polynomial map: no gain → relation is a linear operator (A)
+- difference vectors aligned (|cos|=0.876) → translation/affine (B)
+- linear separability optimal → linear hyperplane (C)
+
+The **spirit of algebraization holds** (the space is a structured algebraic
+object, not raw similarity), but the correct toolkit is **linear algebra +
+affine geometry + lattice/order theory**, not full algebraic geometry
+(polynomial ideals, varieties, hypersurfaces). Concretely:
+
+1. **Affine-subspace model** — the relation lives on an affine subspace
+   (translation + linear map), directly analyzable by linear algebra.
+2. **Linear operator on norm→application** — confirmed; enables operator
+   algebra / eigendecomposition of the doctrinal transform.
+3. **Lattice/order structure** — the E<N<C ordering is a partial order, the
+   natural domain of lattice theory, going beyond mere geometry.

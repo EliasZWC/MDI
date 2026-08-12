@@ -33,7 +33,13 @@ from eval_unified import load_scotus, load_ledgar, build_b, build_a
 
 
 def linear_acc(X, y, cv=3, seed=0):
-    """Simple linear classifier (LR), stratified k-fold accuracy."""
+    """Simple linear classifier (LR), stratified k-fold accuracy.
+
+    cv auto-adapts down when the rarest class has too few members for a
+    stratified split (silences sklearn's UserWarning).
+    """
+    import warnings
+    from sklearn.exceptions import ConvergenceWarning
     from sklearn.linear_model import LogisticRegression
     from sklearn.model_selection import StratifiedKFold
     from sklearn.preprocessing import StandardScaler
@@ -41,30 +47,50 @@ def linear_acc(X, y, cv=3, seed=0):
     y = np.asarray(y)
     if len(set(y)) < 2 or len(y) < 6:
         return float("nan")
-    skf = StratifiedKFold(n_splits=cv, shuffle=True, random_state=seed)
-    accs = []
-    for tr, te in skf.split(X, y):
-        sc = StandardScaler().fit(X[tr])
-        clf = LogisticRegression(max_iter=2000)
-        clf.fit(sc.transform(X[tr]), y[tr])
-        accs.append(clf.score(sc.transform(X[te]), y[te]))
+    from collections import Counter
+    min_cls = min(Counter(y).values())
+    k = cv
+    while k > 1 and min_cls < k:
+        k -= 1
+    if k < 2:
+        return float("nan")
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        warnings.simplefilter("ignore", ConvergenceWarning)
+        skf = StratifiedKFold(n_splits=k, shuffle=True, random_state=seed)
+        accs = []
+        for tr, te in skf.split(X, y):
+            sc = StandardScaler().fit(X[tr])
+            clf = LogisticRegression(max_iter=2000)
+            clf.fit(sc.transform(X[tr]), y[tr])
+            accs.append(clf.score(sc.transform(X[te]), y[te]))
     return float(np.mean(accs))
 
 
 def knn_acc(X, y, cv=3, seed=0, k=5):
+    import warnings
     from sklearn.model_selection import StratifiedKFold
     from sklearn.preprocessing import StandardScaler
     from sklearn.neighbors import KNeighborsClassifier
     X = np.asarray(X, dtype=float); y = np.asarray(y)
     if len(set(y)) < 2 or len(y) < 6:
         return float("nan")
-    skf = StratifiedKFold(n_splits=cv, shuffle=True, random_state=seed)
-    accs = []
-    for tr, te in skf.split(X, y):
-        sc = StandardScaler().fit(X[tr])
-        clf = KNeighborsClassifier(n_neighbors=min(k, len(tr)))
-        clf.fit(sc.transform(X[tr]), y[tr])
-        accs.append(clf.score(sc.transform(X[te]), y[te]))
+    from collections import Counter
+    min_cls = min(Counter(y).values())
+    kk = cv
+    while kk > 1 and min_cls < kk:
+        kk -= 1
+    if kk < 2:
+        return float("nan")
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        skf = StratifiedKFold(n_splits=kk, shuffle=True, random_state=seed)
+        accs = []
+        for tr, te in skf.split(X, y):
+            sc = StandardScaler().fit(X[tr])
+            clf = KNeighborsClassifier(n_neighbors=min(k, len(tr)))
+            clf.fit(sc.transform(X[tr]), y[tr])
+            accs.append(clf.score(sc.transform(X[te]), y[te]))
     return float(np.mean(accs))
 
 
@@ -226,4 +252,16 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        import sys
+        import traceback
+        tb = traceback.format_exc()
+        print(tb)
+        try:
+            with open("downstream_log.txt", "a", encoding="utf-8") as f:
+                f.write("\n[TRACEBACK]\n" + tb + "\n")
+        except Exception:
+            pass
+        sys.exit(1)

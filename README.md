@@ -3,7 +3,7 @@
 > **数理法理同构** — a unified mathematical relation between the
 > doctrinal-normative space and the legal-application space.
 
-**Version:** 0.2.1
+**Version:** 0.2.2
 
 **MDI** asserts the existence of a mathematical construction $\Phi$ that embeds
 both the **doctrinal-normative space** $\mathcal{N}$ (abstract rules, statutes,
@@ -113,6 +113,29 @@ Cross-domain, v2 is the isometry leader and *improves on v1*: ContractNLI
 satisfying P5 (half the Lipschitz constant) and leaving Type-B structure
 unchanged. The axioms help, they do not hurt. See
 [`docs/validation_report.md`](docs/validation_report.md) §v0.2.1.
+
+### v0.2.2 — geometricity & algebraization
+
+**Geometricity** (`verify_geometry.py`): MDI-φ concentrates the doctrinal
+structure into a **low-dimensional subspace** — effective rank 49 vs 313,
+PCA-95% dims 45 vs 157 (mpnet), spectral entropy 3.90 vs 5.75 — and is
+**linear-separable** on the doctrinal relation (E/C SVM 0.638 vs mpnet 0.609).
+
+**Algebraization** (`verify_algebra.py`): the doctrinal relation is **linear /
+affine algebraic structure, not a polynomial variety** —
+- norm→application map: linear RMSE 0.0317 ≈ poly-3 0.0311 (poly-2 worse) → linear operator
+- entailment/contradiction difference vectors aligned (|cos(v_E,v_C)|=0.876) → translation/affine
+- E/C linear separability 0.643 > poly-2 0.606 > poly-3 0.612 → linear hyperplane
+
+So algebraization proceeds with **linear algebra + affine geometry + lattice /
+order theory** (the E<N<C order is a partial order), not full algebraic
+geometry. Input/output definition and the alignment-type decision procedure
+are formalized in [`docs/isomorphism_definition.md`](docs/isomorphism_definition.md).
+
+```bash
+python code/verify_geometry.py --data-dir <dir> --W mdi_W_v2b_mpnet.npy
+python code/verify_algebra.py   --data-dir <dir> --W mdi_W_v2b_mpnet.npy
+```
 
 ```bash
 python code/mdi_unified.py --model all-mpnet-base-v2 --out mdi_W_mpnet.npy

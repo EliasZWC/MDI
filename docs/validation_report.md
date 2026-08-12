@@ -25,6 +25,15 @@ $$
 
 via Mann–Whitney U.
 
+> **Role of Type B (per the theory's boundary, see `isomorphism_definition.md`).**
+> Type A is MDI's *direct* validation target (the doctrinal relation is
+> alignment-type, isometry-preservable). Type B is **not** MDI's target — it is
+> a **no-regression safety check**: it verifies that the theory-loaded MDI-φ,
+> while optimized for alignment, does *not* degrade as a general-purpose
+> representation on non-alignment structure tasks. The claim for Type B is
+> "no harm", not "best". MDI-φ is not expected to beat class-signal-heavy
+> representations (minilm/tfidf/mpnet) on these tasks.
+
 ### Datasets
 
 | Dataset | Domain | Structure | Type |
