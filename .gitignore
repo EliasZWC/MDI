@@ -17,6 +17,8 @@ prototype_verify.txt
 algebraic_inject.txt
 post_mapping.txt
 channel_close.txt
+subspace_verify.txt
+semantic_align.txt
 eval_unified_log.txt
 downstream_log.txt
 

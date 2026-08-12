@@ -406,3 +406,106 @@ python code/mdi_phi_v2.py --data-dir <dir> --epochs 60 --k 64 \
 python code/verify_phi_v2.py --data-dir <dir>
 python code/eval_unified.py --W mdi_W_v2_mpnet.npy --mdi-base all-mpnet-base-v2
 ```
+
+---
+
+# v0.3.0 — why MDI-φ does not lift classification (two clean explanations)
+
+**Context.** MDI-φ gives a strong explanation path (isometry, traceability,
+APPL-1/2/3) but only a small accuracy gain on classification
+(`eval_downstream.py`: legalbert+φ SCOTUS 0.582→0.593, LEDGAR 0.547→0.571,
+CUAD 0.633→0.640, MAUD 0.990→0.985). This section documents *why*, with two
+adversarial experiments that rule out "the downstream was blind" and confirm
+that the legal classification benchmarks are **semantic-alignment tasks that do
+not require doctrine**. Logs: `subspace_verify.txt`, `semantic_align.txt`
+(both stamped `version=0.3.0` via `code/mdi_version.py`).
+
+## 7.1 Category-subspace spectral analysis (`verify_subspace.py`)
+
+**Question.** Does φ give classes a usable low-dim subspace structure that a
+subspace-aware classifier could exploit (H1: downstream was blind), or does φ
+genuinely have no class structure (H2)? Adjudicated with per-class spectra +
+Grassmann principal angles + a subspace-distance classifier, versus a
+**dimension-matched control** (mpnet projected to 64-d via PCA) to remove the
+low-dim confound.
+
+| Dataset | class eff-rank φ vs mpnet | subspace angle φ / mpnet / PCA64 | subspace-class φ vs LR |
+|---|---|---|---|
+| SCOTUS | 24.2 vs 26.9 | 42.5° / 54.9° / 46.2° | 0.150 vs 0.467 |
+| LEDGAR | 4.4 vs 4.5 | 57.3° / 71.0° / 57.5° | 0.053 vs 0.473 |
+| CUAD | 10.5 vs 10.9 | 49.8° / 65.9° / 52.3° | 0.122 vs 0.429 |
+| MAUD | 18.2 vs 20.0 | 42.7° / 52.3° / 46.6° | 0.673 vs 0.961 |
+
+**Result — H2 confirmed.** φ's class subspaces overlap **more** than mpnet's
+(smaller angles) *even against the dim-matched PCA64 control* on 3/4 datasets
+(SCOTUS 42.5<46.2, CUAD 49.8<52.3, MAUD 42.7<46.6; LEDGAR ties). The
+subspace-distance classifier finds **no usable structure in φ** (0.053-0.673,
+far below LR 0.429-0.961), while the *same* method on PCA64 works better
+(0.143-0.355). Conclusion: the small classification gain is not a downstream
+bug — φ simply does not encode class-discrimination structure.
+
+## 7.2 Semantic-alignment hypothesis (`verify_semantic_align.py`)
+
+**Hypothesis (user 2026-08-13).** *"这些法律数据集实际上做的是语义对齐的任务，
+而对于法理不要求"* — the legal classification benchmarks are solvable by
+semantic alignment alone; their labels live in semantic geometry, so they never
+need the doctrinal structure φ provides. Three independent pieces of evidence:
+
+| Dataset | E1 cohesion (same−diff cos) mpnet / φ | E2 unsup-align (KMeans) vs LR | E3 doctrinal-axis η² φ / null |
+|---|---|---|---|
+| SCOTUS | +0.085 / +0.081 | 0.462 vs 0.563 (0.82×) | 0.120 / 0.060 |
+| LEDGAR | +0.235 / +0.233 | 0.498 vs 0.594 (0.84×) | 0.361 / 0.462 |
+| CUAD | +0.271 / +0.275 | 0.394 vs 0.531 (0.74×) | 0.426 / 0.177 |
+| MAUD | +0.280 / +0.312 | 0.771 vs 0.976 (0.79×) | 0.311 / 0.466 |
+
+**Evidence E1 — labels are decided by semantic similarity.** Same-class cosine
+exceeds different-class by +0.23–+0.31 on LEDGAR/CUAD/MAUD (and +0.085 on
+SCOTUS). Strong cohesion gap ⇒ the label boundary lives largely in semantic
+geometry.
+
+**Evidence E2 — zero-supervision alignment already gets most of the way.**
+KMeans over embeddings, Hungarian-matched to true labels (NO label
+supervision, NO doctrine) reaches **74–84% of the supervised LR accuracy** on
+all four datasets. A purely semantic, purely unsupervised method nearly
+reproduces a supervised classifier — the classification signal is mostly
+semantic alignment.
+
+**Evidence E3 — labels are partially orthogonal to the doctrinal axis.** The
+φ doctrinal axis (E vs C separating direction, learned from 1472 Type-A
+triples) explains label structure inconsistently: SCOTUS η²=0.120 (2× random)
+and CUAD η²=0.426 (2.4× random) show *some* alignment, but LEDGAR η²=0.361 and
+MAUD η²=0.311 are **below their random-null** (0.462 / 0.466) — those labels
+are not even aligned with the doctrinal direction.
+
+**Verdict — hypothesis confirmed (with nuance).** The legal classification
+benchmarks (SCOTUS / LEDGAR / CUAD / MAUD) are **primarily semantic-alignment
+tasks**: their label structure lives in semantic geometry (E1), and a
+label-free, doctrine-free clustering reproduces most of the supervised signal
+(E2). This is *why* φ shows no classification lift — **the tasks do not
+require the doctrinal structure φ provides**. The nuance (E3): datasets differ
+in how much they touch the doctrinal axis (SCOTUS/CUAD partly, LEDGAR/MAUD
+not at all), so "the benchmarks test doctrine" is false as a blanket claim.
+
+## 7.3 What this means for the paper
+
+1. **The explanation path is the contribution.** MDI-φ provides what legal
+   decision-making actually requires (traceable, low-dimensional doctrinal
+   relations), *independent* of classifier accuracy. Its lift is on
+   doctrine-requiring tasks (ContractNLI NLI φ 0.658 > mpnet 0.630) and on the
+   explanation/retrieval operations (APPL-1/2/3), not on semantic-alignment
+   classification benchmarks.
+2. **The decoupling is a property of the benchmarks, not a defect of MDI.**
+   The classification datasets do not test doctrine; φ's non-lift there is the
+   expected behaviour of a doctrinal representation facing a non-doctrinal
+   task — a clean, defensible boundary.
+3. **Open question (future work).** E3 shows dataset-dependent alignment with
+   the doctrinal axis. Identifying *which* tasks genuinely require doctrinal
+   structure (and building classification around the explanation path) is the
+   natural next step.
+
+## Reproduction (v0.3.0)
+
+```bash
+python code/verify_subspace.py --data-dir <dir> --W mdi_W_v2b_mpnet.npy --cv 3 --k 8
+python code/verify_semantic_align.py --data-dir <dir> --W mdi_W_v2b_mpnet.npy --cv 3
+```

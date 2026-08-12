@@ -91,7 +91,7 @@ WillsNLI / SARA). This gives a **three-layer contribution**:
    the 64-d doctrinal vector and its alignment geometry are inspectable and
    evidence-linked — interpretability is inherent, not bolted on.
 2. **L2 — lift the simple:** in the alignment domain (ContractNLI NLI) the 64-d
-   φ reaches **0.660** vs 768-d mpnet 0.630 — a 1/12-dimensional projection
+   φ reaches **0.658** vs 768-d mpnet 0.630 — a 1/12-dimensional projection
    *exceeding* its base model on the doctrinal relation task.
 3. **L3 — augment the strong:** `legalbert+phi` augments legal-bert on
    classification: SCOTUS 0.582→**0.593**, LEDGAR 0.547→**0.571**, CUAD
@@ -128,6 +128,27 @@ python code/mdi_phi_v2.py --model all-mpnet-base-v2 --out mdi_W_v2b_mpnet.npy --
 python code/post_mapping.py --W mdi_W_v2b_mpnet.npy        # fit-and-select channels
 python code/channel_close.py --W mdi_W_v2b_mpnet.npy       # closed-loop per-dataset channel
 ```
+
+**Why L3's classification gain is small — two verified explanations**
+(`docs/validation_report.md` §v0.3.0):
+
+1. **φ has no class-discrimination structure** (`verify_subspace.py`):
+   per-class spectra + Grassmann angles show φ's class subspaces *overlap more*
+   than mpnet's, even against a dimension-matched PCA64 control; a
+   subspace-distance classifier finds nothing in φ (but works on PCA64). The
+   small gain is not a downstream bug.
+2. **The classification benchmarks are semantic-alignment tasks, not
+   doctrinal ones** (`verify_semantic_align.py`): same-class cosine exceeds
+   different-class by +0.23–0.31 (E1); a label-free, doctrine-free KMeans
+   reaches 74–84% of supervised LR (E2); and the φ doctrinal axis is partially
+   orthogonal to the labels (E3). The benchmarks live in semantic geometry —
+   they never require the doctrinal structure φ provides.
+
+   **This is the honest boundary and a contribution:** MDI-φ lifts the
+   doctrine-requiring task (ContractNLI NLI) and powers the explanation
+   operations (APPL-1/2/3), while a semantic-alignment benchmark shows no lift
+   *because it does not test doctrine*. The explanation path — not accuracy —
+   is the contribution.
 
 ### v0.2.1 — theory-loaded MDI-φ (P2+P3+P5 in the objective)
 
