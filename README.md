@@ -3,7 +3,7 @@
 > **数理法理同构** — a unified mathematical relation between the
 > doctrinal-normative space and the legal-application space.
 
-**Version:** 0.2.5
+**Version:** 0.3.0
 
 **MDI** asserts the existence of a mathematical construction $\Phi$ that embeds
 both the **doctrinal-normative space** $\mathcal{N}$ (abstract rules, statutes,
@@ -93,15 +93,41 @@ WillsNLI / SARA). This gives a **three-layer contribution**:
 2. **L2 — lift the simple:** in the alignment domain (ContractNLI NLI) the 64-d
    φ reaches **0.660** vs 768-d mpnet 0.630 — a 1/12-dimensional projection
    *exceeding* its base model on the doctrinal relation task.
-3. **L3 — augment the strong:** `legalbert+phi` improves legal-bert on all
-   three classification tasks (SCOTUS 0.582→0.590, LEDGAR 0.580→0.598,
-   CUAD 0.676→0.680); `mpnet+phi` is neutral (no loss).
+3. **L3 — augment the strong:** `legalbert+phi` augments legal-bert on
+   classification: SCOTUS 0.582→**0.593**, LEDGAR 0.547→**0.571**, CUAD
+   0.633→**0.640** (MAUD 0.990→0.985, near-parity, honest boundary). Verified
+   with the current v0.3.0 weights (see `code/mdi_version.py`); log header
+   records `version=0.3.0` + weight filenames.
 
 MDI-φ is also the **isometry leader** on both Type-A domains (ContractNLI
 0.344, WillsNLI 0.402 — best of all 6 representations) and the best structure
 representation on ECHR (0.464). See
 [`docs/validation_report.md`](docs/validation_report.md) §v0.2.0 for full
 8-dataset × 6-representation tables.
+
+### v0.3.0 — MDI as paradigm: Mapping + Channel (拟合)
+
+**This is the current framework version.** MDI is formalized as a **two-step
+paradigm**, and both steps are *fitted/selected per dataset* — this is what
+makes MDI a paradigm, not a single projection:
+
+- **Step 1 — Mapping (映射)**: φ projects texts/norms into a unified
+  computable Doctrinal Space. The projection is trained with the theory's own
+  axioms in the objective (P2 isometry + P3 E<N<C monotonicity + P5 Lipschitz
+  spectral-norm bound), producing `mdi_W_v2b_mpnet.npy` (768→64, ‖W‖₂=2.0).
+- **Step 2 — Channel (通道)**: on that space we *fit and select* a
+  mathematical treatment per task — alignment / category (classification) /
+  metric — choosing the channel that fits each dataset. Validating MDI =
+  validating the whole flow (mapping quality × channel effectiveness).
+
+This version supersedes v0.2.5's "MDI = mapping only" framing (mapping alone
+was a representation; adding the fitted channel makes it a paradigm).
+
+```bash
+python code/mdi_phi_v2.py --model all-mpnet-base-v2 --out mdi_W_v2b_mpnet.npy --lip 2.0
+python code/post_mapping.py --W mdi_W_v2b_mpnet.npy        # fit-and-select channels
+python code/channel_close.py --W mdi_W_v2b_mpnet.npy       # closed-loop per-dataset channel
+```
 
 ### v0.2.1 — theory-loaded MDI-φ (P2+P3+P5 in the objective)
 

@@ -35,6 +35,7 @@ from verify_cross_domain import load_cuad, load_maud, tfidf, legalbert_encode
 from verify_rigor import st_encode
 from eval_unified import load_scotus, load_ledgar, build_b
 from eval_downstream import linear_acc
+from mdi_version import W_MDI, header
 
 
 def doctrina_axis(F, W):
@@ -67,7 +68,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", default="data")
     ap.add_argument("--max", type=int, default=600)
-    ap.add_argument("--W", default="mdi_W_v2b_mpnet.npy")
+    ap.add_argument("--W", default=W_MDI)
     ap.add_argument("--cv", type=int, default=3)
     ap.add_argument("--k-sub", type=int, default=10)
     args = ap.parse_args()
@@ -77,6 +78,7 @@ def main():
     def emit(s):
         print(s); log.write(s + "\n"); log.flush()
 
+    emit(header(f"W={args.W}"))
     W = np.load(args.W)
     emit(f"W={args.W} shape={W.shape}  k_sub={args.k_sub}")
     emit("## Algebraic injection vs plain phi concat (generic classification)")

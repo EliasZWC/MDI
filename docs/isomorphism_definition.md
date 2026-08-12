@@ -186,6 +186,17 @@ distinct from Mapping (mapping builds the space; channel uses it), but it is
    step can pick kernel/subspace/category channels to serve other tasks. Weak
    alignment of *that instance* is not a paradigm failure.
 
+**Channel diversity is a principle, not a fixed list.** The channels in this
+repo (align / class / metric) are *illustrative examples*. What matters is that
+the **Channel step itself is effective** — after Mapping, a dataset is fitted
+against several mathematical treatments and the best-fitting one is selected.
+Any other user may add arbitrary channels (new mathematical treatments of the
+space); the paradigm guarantees the *mechanism* (fit-and-select), not a closed
+set of channels. The current 8 datasets trigger align/class; a metric-type
+dataset (case retrieval, precedent matching, similarity ranking) would trigger
+the metric channel — its absence from the current results is a property of
+*these datasets*, not of the channel.
+
 ### Space-operation probe (v0.2.5): the space is computable, supervision sets the bias
 
 Verified on **cross-domain real contract clauses** (CUAD / MAUD, which the

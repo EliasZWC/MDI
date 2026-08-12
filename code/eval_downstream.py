@@ -12,12 +12,13 @@ legalbert (optional). Simple models only (sklearn LogisticRegression / KNN).
 
 Usage:
   python code/eval_downstream.py --data-dir <dir> [--max 600]
-      [--W mdi_W.npy --W-mpnet mdi_W_mpnet.npy]
+      [--W <minilm-phi> --W-mpnet <mpnet-phi>]   # defaults from mdi_version
       [--models tfidf,minilm,mpnet,phi-minilm,phi-mpnet] [--cv 3]
 Output: downstream_log.txt
 """
 import argparse
 import collections
+import datetime
 import os
 import random
 import time
@@ -28,6 +29,7 @@ from tqdm import tqdm
 from verify_cross_domain import (load_contractnli, load_sara, load_willsnli,
                                  load_cuad, load_maud, load_echr, tfidf,
                                  legalbert_encode)
+from mdi_version import VERSION, W_MDI, W_MDI_MPNET, header
 from verify_rigor import st_encode, auc_effect
 from eval_unified import load_scotus, load_ledgar, build_b, build_a
 
@@ -172,8 +174,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", default="data")
     ap.add_argument("--max", type=int, default=600)
-    ap.add_argument("--W", default="mdi_W.npy")
-    ap.add_argument("--W-mpnet", default="mdi_W_mpnet.npy")
+    ap.add_argument("--W", default=W_MDI)
+    ap.add_argument("--W-mpnet", default=W_MDI_MPNET)
     ap.add_argument("--models",
                     default="tfidf,minilm,mpnet,legalbert,phi-minilm,phi-mpnet,"
                             "minilm+phi,mpnet+phi,legalbert+phi")
@@ -185,12 +187,10 @@ def main():
     models = [x for x in args.models.split(",")]
     Wm = np.load(args.W) if os.path.exists(args.W) else None
     Wm_mp = np.load(args.W_mpnet) if os.path.exists(args.W_mpnet) else None
-    print("=" * 74)
-    print("MDI downstream validation: geometric rep (phi) + SIMPLE models on tasks")
-    print(f"W-minilm={'yes' if Wm is not None else 'no'} W-mpnet={'yes' if Wm_mp is not None else 'no'}")
-    print("=" * 74)
-    log.write("MDI downstream validation\n")
-
+    print(header(f"W-minilm={args.W}  W-mpnet={args.W_mpnet}"))
+    log.write(f"MDI downstream validation  version={VERSION}\n")
+    log.write(f"W-minilm={args.W}  W-mpnet={args.W_mpnet}\n")
+    log.write(f"run-time={datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
     # ---- Classification tasks ----
     emit(log, "## Classification (linear acc)  [LR mean acc over CV]")
     for name, fn in [("SCOTUS", load_scotus), ("LEDGAR", load_ledgar),

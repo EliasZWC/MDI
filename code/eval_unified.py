@@ -10,7 +10,7 @@ mpnet (universal-strong), and MDI phi (learned on type-A pairs of
 ContractNLI/WillsNLI/SARA).
 
 Usage:
-  python code/eval_unified.py --data-dir <dir> [--W mdi_W.npy] [--max 400]
+  python code/eval_unified.py --data-dir <dir> [--W <minilm-phi>] [--max 400]
 Output: eval_unified_log.txt
 """
 import argparse
@@ -28,6 +28,7 @@ from verify_cross_domain import (load_contractnli, load_sara, load_willsnli,
                                  tfidf_bigram, legalbert_encode,
                                  pair_cosine_dists)
 from verify_rigor import st_encode, auc_effect, null_perm
+from mdi_version import VERSION, W_MDI, header
 
 # ---- LexGLUE loaders (Type B) ----
 def load_scotus(dirpath, max_n):
@@ -143,7 +144,7 @@ def emit(log, line):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", default="data")
-    ap.add_argument("--W", default="mdi_W.npy")
+    ap.add_argument("--W", default=W_MDI)
     ap.add_argument("--max", type=int, default=400)
     ap.add_argument("--perm", type=int, default=100)
     ap.add_argument("--models", default="tfidf,bigram,minilm,mpnet,legalbert")
@@ -157,12 +158,9 @@ def main():
     t0 = time.time()
     log = open("eval_unified_log.txt", "w", encoding="utf-8")
     W = np.load(args.W) if os.path.exists(args.W) else None
-    print("=" * 72)
-    print("MDI unified phi evaluation (8 datasets, vs minilm baseline)")
-    print(f"W={'loaded '+str(W.shape) if W is not None else 'NONE (identity)'}")
-    print(f"only={args.only}")
-    print("=" * 72)
-    log.write("MDI unified phi eval\n")
+    print(header(f"W={args.W} shape={W.shape if W is not None else 'NONE(identity)'} mdi-base={args.mdi_base} only={args.only}"))
+    log.write(f"MDI unified phi eval  version={VERSION}\n")
+    log.write(f"W-file={args.W}  shape={W.shape if W is not None else 'NONE(identity)'}  mdi-base={args.mdi_base}\n")
 
     def want(name):
         return args.only is None or args.only == name

@@ -19,6 +19,7 @@ import numpy as np
 
 from verify_cross_domain import load_contractnli, load_sara, load_willsnli
 from verify_rigor import st_encode, auc_effect
+from mdi_version import header
 
 
 def load_type_a(dirpath, max_n):
@@ -35,6 +36,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", default="data")
     ap.add_argument("--max", type=int, default=600)
+    # W1/W2 are the HISTORICAL v1 / v2 mpnet projections compared by this
+    # script (P5 regression v1->v2). They are NOT the canonical weight.
     ap.add_argument("--W1", default="mdi_W_mpnet.npy")
     ap.add_argument("--W2", default="mdi_W_v2_mpnet.npy")
     args = ap.parse_args()
@@ -44,6 +47,7 @@ def main():
     def emit(s):
         print(s); log.write(s + "\n"); log.flush()
 
+    emit(header(f"W1={args.W1} W2={args.W2}"))
     W1 = np.load(args.W1)
     W2 = np.load(args.W2)
     emit(f"v1 {args.W1} shape={W1.shape}  v2 {args.W2} shape={W2.shape}")
