@@ -323,6 +323,66 @@ v1 *while satisfying P5* (half the Lipschitz constant) and *without harming
 structure* (Type B unchanged, ECHR still best). The axioms entering the
 objective help rather than hurt — evidence that P2/P3/P5 are not decorative.
 
+---
+
+# v0.2.4 — corrected baselines (single-dataset protocol) + layered architecture
+
+## Corrected v2b baselines (`--only` protocol)
+
+The v0.2.1 full-run numbers (0.300 / 0.386) were computed with a stale weight
+(v2 vs v2b; Frobenius distance 0.295). Re-evaluating with the **single-dataset
+protocol** (`eval_unified.py --only <dataset>`, which also removes the
+version-mixup failure mode) gives the accurate v2b baselines:
+
+**Type A — isometry (AUC ↓, lower = better):**
+
+| Dataset | tfidf | minilm | mpnet | legalbert | **MDI-φ v2b** | lead |
+|---|---|---|---|---|---|---|
+| ContractNLI | 0.354 | 0.445 | 0.360 | 0.468 | **0.215** 🏆 | −0.139 (d=1.18) |
+| WillsNLI | 0.499 | 0.403 | 0.453 | 0.499 | **0.338** 🏆 | −0.065 (d=0.63) |
+| SARA | 0.500 | 0.492 | 0.480 | 0.506 | 0.482 | boundary (all n.s.) |
+
+**Type B — structure (AUC ↓; no-regression check):**
+
+| Dataset | best baseline | **MDI-φ v2b** | status |
+|---|---|---|---|
+| ECHR | 0.472 (mpnet) | **0.462** 🏆 | still best |
+| CUAD | 0.172 (minilm) | 0.242 | mid (no regression) |
+| MAUD | 0.065 (tfidf) | 0.092 | mid (no regression) |
+| SCOTUS | 0.319 (mpnet) | 0.339 | mid (no regression) |
+| LEDGAR | 0.039 (mpnet) | 0.088 | mid (no regression) |
+
+**Corrected finding.** MDI-φ v2b is a *stronger* isometry leader than the
+v0.2.1 report suggested — ContractNLI d=1.18 (very large effect), WillsNLI
+d=0.63 — while remaining no-regression on Type B and still best on ECHR. The
+single-dataset protocol is now the standard for baseline comparisons.
+
+## Layered architecture (structure in φ, operations on top)
+
+Loading the *translation consistency* (APPL-3's algebraic fact) into the
+training objective failed in both forms — `mdi_phi_v3.py` (projection share)
+and `mdi_phi_v31.py` (cosine alignment):
+
+| | v2b | v3 | v3.1 |
+|---|---|---|---|
+| P3 order | OK (E<N<C) | ✗ (dN<dE) | ✗ (dN highest) |
+| isometry AUC (train) | **0.285** | 0.395 | 0.424 |
+| APPL-1 retrieval top-1 | 0.006 | **0.019** | 0.019 |
+
+Direction alignment and amplitude ordering (P3) conflict in one objective —
+a genuine trade-off, not a bug. **Conclusion: MDI is consumed in layers.** φ
+keeps the structure (v2b); the operations live in the application layer
+(APPL-1/2/3). "Enhancing MDI via advanced applications" works by strengthening
+the application layer, not by altering φ.
+
+## Reproduction (v0.2.4)
+
+```bash
+python code/eval_unified.py --W mdi_W_v2b_mpnet.npy --mdi-base all-mpnet-base-v2 --only ContractNLI
+python code/eval_unified.py --W mdi_W_v2b_mpnet.npy --mdi-base all-mpnet-base-v2 --only WillsNLI
+# ... --only ECHR / CUAD / MAUD / SCOTUS / LEDGAR
+```
+
 ## Reproduction (v0.2.1)
 
 ```bash
